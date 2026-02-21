@@ -45,9 +45,14 @@ function toggleMenu(): void {
             </div>
             <div class="sidemenu">
                 <!-- menu, put all divs in here -->
-                <div class="team-features"></div>
+                <div class="team-features">[Insert Team]'s Assigned Features</div>
                 <!-- team features first div -->
-                <div id="background-prio-tasks"></div>
+                <div class="background-prio-tasks">
+                    <div class="foreground-prio-title">Priority Task/Current Task</div>
+                    <div class="foreground-prio-tasks">
+                        <div class="foreground-text">[Text text]</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -161,41 +166,61 @@ h1 {
 .team-features {
     width: 90%;
     height: 40px;
-    border-radius: 15px;
     background-color: #ffebba;
+    margin: 20px;
+    color: black;
+    display: flex;
+    justify-content: center;
     text-align: center;
-    margin: 10px;
+    align-self: center;
+    align-items: center;
+    border-radius: 15px;
 }
-#background-prio-tasks {
+.background-prio-tasks {
+    display: flex;
     width: 90%;
     height: 200px;
     border-radius: 50px;
     background-color: #ffebba;
+    border-radius: 15px;
     align-self: center;
-}
-.foreground-prio-tasks {
-    width: 80%;
-    height: 128x;
-    border-radius: 15px;
-    background-color: #f3bb5b;
-}
-.text .foreground-prio-tasks {
-    width: 80%;
-    height: 11px;
-    border-radius: 15px;
-    background-color: #fff4e0;
+    align-items: center;
+    flex-direction: column;
 }
 
-#other-task-background {
-    width: 80%;
-    height: 128px;
+.foreground-prio-tasks {
+    width: 90%;
+    height: 120px;
+    background-color: #f3bb5b;
     border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.foreground-text {
+    width: 95%;
+    height: 105px;
+    background-color: #fff4e0;
+    border-radius: 15px;
+    text-align: center;
+}
+.foreground-prio-title {
+    width: 90%;
+    height: 20px;
+    background-color: #f3bb5b;
+    border-radius: 15px;
+    text-align: center;
+    margin: 5px;
+    color: black;
+}
+#other-task-background {
+    width: 90%;
+    height: 128px;
     background-color: #ffebba;
 }
 
 #background-large {
     width: 80%;
     height: 480px;
-    border-radius: 15px;
 }
 </style>
