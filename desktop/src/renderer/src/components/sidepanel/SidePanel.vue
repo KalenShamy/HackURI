@@ -44,18 +44,11 @@ function toggleMenu(): void {
                 </div>
             </div>
             <div class="sidemenu">
-                <h1>Menu</h1>
+                <!-- menu, put all divs in here -->
+                <div class="team-features"></div>
+                <!-- team features first div -->
+                <div id="background-prio-tasks"></div>
             </div>
-        </div>
-        <div v-if="menuVisible" class="sidemenu">
-            <!-- menu, put all divs in here -->
-            <div class="team-features"></div>
-            <!-- team features first div -->
-            <div id="background-prio-tasks"></div>
-        </div>
-        <div v-if="menuVisible" class="sidemenu">
-            <div class="team-features"></div>
-            <div class="background-prio-tasks"></div>
         </div>
     </div>
 </template>
