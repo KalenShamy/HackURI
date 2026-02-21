@@ -1,25 +1,59 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { onMounted } from 'vue'
+
+onMounted(() => {
+    const invisbox = document.getElementById('invisbox')!
+
+    invisbox.addEventListener('mouseenter', () => {
+        window.electron.ipcRenderer.send('set-ignore-mouse', false)
+    })
+
+    invisbox.addEventListener('mouseleave', () => {
+        window.electron.ipcRenderer.send('set-ignore-mouse', true)
+    })
+})
+</script>
 
 <template>
-    <div class="floating-widget"></div>
+    <div id="invisbox" class="invisible-box">
+        <button>connect to github</button>
+
+        <div class="floating-widget">
+            <img src="/arrow_back.svg" alt="open arrow" />
+        </div>
+    </div>
 </template>
 
 <style scoped>
-.floating-widget {
+h1 {
+    color: white;
+}
+.invisible-box {
     position: fixed;
-    top: 30%;
+    top: 0;
     right: 0;
+    background-color: bisque;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
 
-    /* Size of the widget */
+.floating-widget {
+    position: relative;
     width: 50px;
     height: 80px;
-
-    /* Create the semi-circle shape facing left */
-    border-top-left-radius: 40px;
-    border-bottom-left-radius: 40px;
+    border-width: 2px;
+    border-style: solid;
+    border-right: none;
+    border-color: var(--brownish);
+    border-top-left-radius: 50px;
+    border-bottom-left-radius: 50px;
 
     /* Dark, semi-transparent background from the image */
-    background-color: rgba(40, 40, 40, 0.8);
+    background-color: var(--dark-gray-pink);
 
     /* Center the icon */
     display: flex;
@@ -27,11 +61,12 @@
     align-items: center;
 
     cursor: pointer;
+    pointer-events: auto;
     /* Ensure it's always on top of other content */
     z-index: 9999;
 
     /* Add padding to offset the icon from the edge */
-    padding-right: 5px;
+    padding-right: 0px;
 
     /* A subtle shadow for depth */
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
@@ -40,11 +75,16 @@
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+/* Change icon color when the parent widget is hovered */
+.floating-widget:hover .icon {
+    color: #ffffff;
+}
+
 /* Style for the arrow icon */
 .icon {
-    width: 24px;
-    height: 24px;
-    /* Light gray color for the initial state */
+    width: 30px;
+    height: 30px;
+    /* Initial color */
     color: #a0a0a0;
     /* Smooth transition for the icon's rotation and color */
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);

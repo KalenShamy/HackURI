@@ -1,5 +1,7 @@
 <script setup lang="ts"></script>
 
-<template><div></div></template>
+<template>
+    <div><h1>hihi</h1></div>
+</template>
 
 <style scoped></style>
