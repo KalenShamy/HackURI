@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+out/
+*.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+.eggs/
+*.so
+db.sqlite3
+db.sqlite3-journal
+*.pyc
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Electron
+*.asar
+
+# Vue / Vite
+*.local
+
+# Eslint
+.eslintcache
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
