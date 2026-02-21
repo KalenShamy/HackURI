@@ -9,37 +9,36 @@
     --dark-gray-pink: #42323c;
     --brownish: #56453e;
 
-    <!--light mode colors-->
-    --light-beige: #FFEBBA;
+    /* <!--light mode colors--> */
+    --light-beige: #ffebba;
     /* <!--this is for 2nd layer of background of side, and first latyer of main--> */
-    --side-background-biege: #E9C17D
-     /* ;<!--this is for background of the side menu--> */
-    --whitish-yellow: #FFF4E0; 
+    --side-background-biege: #e9c17d; /* ;<!--this is for background of the side menu--> */
+    --whitish-yellow: #fff4e0;
     /* <!--brighest color behind important text--> */
-    --textbox-yellow: #F3BB5B;
-     /* <!--this is for textboxes--> */
-    --Text-brown: #4D3C35; 
+    --textbox-yellow: #f3bb5b;
+    /* <!--this is for textboxes--> */
+    --Text-brown: #4d3c35;
     /* <!--text color--> */
-    --pullout-yellow: #FFC739;
-     /* <!-- this is for the pullout menu--> */
-    --main-background-beige: #E9C17D; 
+    --pullout-yellow: #ffc739;
+    /* <!-- this is for the pullout menu--> */
+    --main-background-beige: #e9c17d;
     /* <!-- this is for the main background--> */
-    --settings-beige: #F3BB5B; 
+    --settings-beige: #f3bb5b;
     /* <!-- this is for the settings background very sad to look at--> */
 
-    <!--dark mode colors-->
-    --off-black #25211F;
-     /* <!-- this is for the main background in dark mode and textboxes--> */
-    --funky-gray: #7E7567; 
+    /* <!--dark mode colors--> */
+    --off-black: #25211f;
+    /* <!-- this is for the main background in dark mode and textboxes--> */
+    --funky-gray: #7e7567;
     /* <!-- this is for some background boxes--> */
-    --textbox-yellow: #F8A933; 
+    --textbox-yellow: #f8a933;
     /* <!-- this is for textboxes in dark mode--> */
-    --textbox-orange: #E48B04;
+    --textbox-orange: #e48b04;
     /* also for text boxes but more orangish , i wanted to name it evil-yellow*/
-    --highlight-yellow: #FFC739;
-     /* <!-- this is for highlights in dark mode--> */
-    --off-white: #EEE1CD; 
+    --highlight-yellow: #ffc739;
+    /* <!-- this is for highlights in dark mode--> */
+    --off-white: #eee1cd;
     /* <!--just in case--> */
-    
+
     background: transparent;
 }
