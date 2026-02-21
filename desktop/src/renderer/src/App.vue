@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import Setup from './pages/Main.vue'
-import Main from './components/main/Main.vue'
+import SidePanel from './components/sidepanel/SidePanel.vue'
+import SetupView from './components/setup/SetupView.vue'
+import MainView from './components/main/MainView.vue'
 
 enum pages {
-    setup = 'setup',
+    sidepanel = 'sidepanel',
     main = 'main',
-    popup = 'popup'
+    setup = 'setup'
 }
 
-const activePage = ref(pages.setup)
+const activePage = ref(pages.sidepanel)
 
 window.electron.ipcRenderer.on('set-view', (_, value: string) => {
     activePage.value = value as pages
@@ -17,12 +18,15 @@ window.electron.ipcRenderer.on('set-view', (_, value: string) => {
 </script>
 
 <template>
-    <Setup v-if="activePage === pages.setup" />
-    <Main v-else-if="activePage === pages.main"> </Main>
+    <main>
+        <SidePanel v-if="activePage === pages.sidepanel" />
+        <MainView v-else-if="activePage === pages.main" />
+        <SetupView v-else-if="activePage === pages.setup" />
+    </main>
 </template>
 
 <style scoped>
-* {
+main {
     font-family: 'Google Sans Flex';
     color: #e3e3e3;
 }

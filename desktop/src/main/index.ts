@@ -53,10 +53,10 @@ export function createWindow(): void {
         y: Math.floor((screenHeight - 600) / 2),
         width: 800,
         height: 600,
-        transparent: true,
+        transparent: false,
         frame: true, // no title bar, close/minimize/etc controls
         icon: icon,
-        alwaysOnTop: true,
+        alwaysOnTop: false,
         skipTaskbar: false,
         webPreferences: {
             preload: join(__dirname, '../preload/index.js'),
@@ -83,6 +83,28 @@ export function createWindow(): void {
     } else {
         mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
     }
+
+    mainWindow.webContents.once('did-finish-load', () => {
+        mainWindow.webContents.send('set-view', 'main')
+    })
+}
+
+// Ensure single instance — on second launch, focus/recreate the window instead
+const gotTheLock = app.requestSingleInstanceLock()
+
+if (!gotTheLock) {
+    app.quit()
+} else {
+    app.on('second-instance', () => {
+        const windows = BrowserWindow.getAllWindows()
+        if (windows.length <= 1) {
+            createWindow()
+        } else {
+            const mainWin = windows.find((w) => !w.isAlwaysOnTop()) ?? windows[0]
+            if (mainWin.isMinimized()) mainWin.restore()
+            mainWin.focus()
+        }
+    })
 }
 
 // This method will be called when Electron has finished
@@ -105,9 +127,8 @@ app.whenReady().then(() => {
     createSidePanel()
 
     app.on('activate', function () {
-        // On macOS it's common to re-create a window in the app when the
-        // dock icon is clicked and there are no other windows open.
-        if (BrowserWindow.getAllWindows().length === 0) createWindow()
+        // create main window if only the setup window is open
+        if (BrowserWindow.getAllWindows().length === 1) createWindow()
     })
 })
 
