@@ -47,10 +47,33 @@ function toggleMenu(): void {
                 <h1>Menu</h1>
             </div>
         </div>
+        <div v-if="menuVisible" class="sidemenu">
+            <!-- menu, put all divs in here -->
+            <div class="team-features"></div>
+            <!-- team features first div -->
+            <div id="background-prio-tasks"></div>
+        </div>
+        <div v-if="menuVisible" class="sidemenu">
+            <div class="team-features"></div>
+            <div class="background-prio-tasks"></div>
+        </div>
     </div>
 </template>
 
 <style scoped>
+.sidemenu {
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background-color: #e9c17d;
+    width: 80%;
+    height: 100%;
+    border-radius: 30px;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+}
+h1 {
+    color: white;
+}
 .invisible-box {
     position: fixed;
     top: 0;
@@ -60,7 +83,7 @@ function toggleMenu(): void {
     border-style: solid;
     pointer-events: none;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -93,7 +116,7 @@ function toggleMenu(): void {
 }
 
 .sidemenu {
-    background-color: bisque;
+    background-color: #e9c17d;
     width: 350px;
     height: 100%;
     border-radius: 30px;
@@ -140,5 +163,46 @@ h1 {
     width: 30px;
     height: 30px;
     color: #a0a0a0;
+}
+
+.team-features {
+    width: 90%;
+    height: 40px;
+    border-radius: 15px;
+    background-color: #ffebba;
+    text-align: center;
+    margin: 10px;
+}
+#background-prio-tasks {
+    width: 90%;
+    height: 200px;
+    border-radius: 50px;
+    background-color: #ffebba;
+    align-self: center;
+}
+.foreground-prio-tasks {
+    width: 80%;
+    height: 128x;
+    border-radius: 15px;
+    background-color: #f3bb5b;
+}
+.text .foreground-prio-tasks {
+    width: 80%;
+    height: 11px;
+    border-radius: 15px;
+    background-color: #fff4e0;
+}
+
+#other-task-background {
+    width: 80%;
+    height: 128px;
+    border-radius: 15px;
+    background-color: #ffebba;
+}
+
+#background-large {
+    width: 80%;
+    height: 480px;
+    border-radius: 15px;
 }
 </style>
