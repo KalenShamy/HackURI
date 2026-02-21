@@ -52,8 +52,7 @@ export function createWindow(): void {
         y: Math.floor((screenHeight - 600) / 2),
         width: 800,
         height: 600,
-        transparent: true,
-        frame: true, // no title bar, close/minimize/etc controls
+        transparent: false,
         alwaysOnTop: true,
         skipTaskbar: false,
         webPreferences: {
@@ -70,10 +69,6 @@ export function createWindow(): void {
         shell.openExternal(details.url)
         return { action: 'deny' }
     })
-    mainWindow.setIgnoreMouseEvents(true, { forward: true })
-    ipcMain.on('set-ignore-mouse', (_, ignore: boolean) => {
-        mainWindow.setIgnoreMouseEvents(ignore, { forward: true })
-    })
     // HMR mfor renderer base on electron-vite cli.
     // Load the remote URL for development or the local html file for production.
     if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
@@ -81,6 +76,11 @@ export function createWindow(): void {
     } else {
         mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
     }
+
+    // BACKLOG: could cause race condition
+    mainWindow.webContents.once('did-finish-load', () => {
+        mainWindow.webContents.send('set-view', 'main')
+    })
 }
 
 // This method will be called when Electron has finished
@@ -97,15 +97,16 @@ app.whenReady().then(() => {
         optimizer.watchWindowShortcuts(window)
     })
 
-    // IPC test
-    ipcMain.on('ping', () => console.log('pong'))
-
     createSidePanel()
+
+    ipcMain.on('open-main-window', () => {
+        createWindow()
+    })
 
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
-        if (BrowserWindow.getAllWindows().length === 0) createWindow()
+        if (BrowserWindow.getAllWindows().length === 1) createWindow()
     })
 })
 

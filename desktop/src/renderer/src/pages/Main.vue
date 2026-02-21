@@ -1,10 +1,16 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import SidePanel from '@renderer/components/sidepanel/SidePanel.vue'
 import Setup from '@renderer/components/setup/Setup.vue'
 import Main from '@renderer/components/main/Main.vue'
 
-const currentPage = ref('sidepanel')
+const currentPage = ref('')
+
+onMounted(() => {
+    if (!currentPage.value) {
+        currentPage.value = 'sidepanel'
+    }
+})
 </script>
 
 <template>

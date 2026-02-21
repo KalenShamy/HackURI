@@ -4,12 +4,16 @@ import Setup from './pages/Main.vue'
 import Main from './components/main/Main.vue'
 
 enum pages {
-    setup,
-    main,
-    popup
+    setup = 'setup',
+    main = 'main',
+    popup = 'popup'
 }
 
 const activePage = ref(pages.setup)
+
+window.electron.ipcRenderer.on('set-view', (_, value: string) => {
+    activePage.value = value as pages
+})
 </script>
 
 <template>
