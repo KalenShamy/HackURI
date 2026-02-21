@@ -43,9 +43,6 @@ h1 {
     top: 0;
     right: 0;
     background-color: transparent;
-    border: rgb(255, 255, 255);
-    border-width: 1px;
-    border-style: solid;
     pointer-events: none;
     width: 100%;
     height: 100%;

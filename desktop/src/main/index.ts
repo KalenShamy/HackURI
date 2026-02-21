@@ -13,7 +13,7 @@ export function createSidePanel(): void {
         width: 400,
         height: 800,
         transparent: true,
-        frame: true, // no title bar, close/minimize/etc controls
+        frame: false, // no title bar, close/minimize/etc controls
         alwaysOnTop: true,
         skipTaskbar: false,
         webPreferences: {
