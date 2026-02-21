@@ -3,7 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 //import icon from '../../resources/icon.png?asset'
 
-export function createWindow(): void {
+export function createSidePanel(): void {
     const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize
 
     // Create the browser window.
@@ -11,6 +11,46 @@ export function createWindow(): void {
         x: screenWidth - 350,
         y: Math.floor((screenHeight - 600) / 2),
         width: 350,
+        height: 600,
+        transparent: true,
+        frame: true, // no title bar, close/minimize/etc controls
+        alwaysOnTop: true,
+        skipTaskbar: false,
+        webPreferences: {
+            preload: join(__dirname, '../preload/index.js'),
+            sandbox: false
+        }
+    })
+
+    mainWindow.on('ready-to-show', () => {
+        mainWindow.show()
+    })
+
+    mainWindow.webContents.setWindowOpenHandler((details) => {
+        shell.openExternal(details.url)
+        return { action: 'deny' }
+    })
+    mainWindow.setIgnoreMouseEvents(true, { forward: true })
+    ipcMain.on('set-ignore-mouse', (_, ignore: boolean) => {
+        mainWindow.setIgnoreMouseEvents(ignore, { forward: true })
+    })
+    // HMR mfor renderer base on electron-vite cli.
+    // Load the remote URL for development or the local html file for production.
+    if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+        mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+    } else {
+        mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    }
+}
+
+export function createWindow(): void {
+    const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize
+
+    // Create the browser window.
+    const mainWindow = new BrowserWindow({
+        x: Math.floor((screenWidth - 800) / 2),
+        y: Math.floor((screenHeight - 600) / 2),
+        width: 800,
         height: 600,
         transparent: true,
         frame: true, // no title bar, close/minimize/etc controls
@@ -60,7 +100,7 @@ app.whenReady().then(() => {
     // IPC test
     ipcMain.on('ping', () => console.log('pong'))
 
-    createWindow()
+    createSidePanel()
 
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the

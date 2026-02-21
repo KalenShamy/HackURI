@@ -16,15 +16,17 @@ onMounted(() => {
 
 <template>
     <div id="invisbox" class="invisible-box">
-        <button>connect to github</button>
-
         <div class="floating-widget">
             <img src="/arrow_back.svg" alt="open arrow" />
         </div>
+        <div class="sidemenu"></div>
     </div>
 </template>
 
 <style scoped>
+.sidemenu {
+    background-color: bisque;
+}
 h1 {
     color: white;
 }
@@ -32,7 +34,10 @@ h1 {
     position: fixed;
     top: 0;
     right: 0;
-    background-color: bisque;
+    background-color: transparent;
+    border: rgb(255, 255, 255);
+    border-width: 1px;
+    border-style: solid;
     pointer-events: none;
     width: 100%;
     height: 100%;
