@@ -32,6 +32,9 @@ const arrowicon = computed(() => (menuVisible.value ? '/arrow_forward.svg' : '/a
 function toggleMenu(): void {
     menuVisible.value = !menuVisible.value
 }
+function switchscreen(): void {
+    window.electron.ipcRenderer.send('open-main-window')
+}
 </script>
 
 <template>
@@ -45,12 +48,24 @@ function toggleMenu(): void {
             </div>
             <div class="sidemenu">
                 <!-- menu, put all divs in here -->
-                <div class="team-features">[Insert Team]'s Assigned Features</div>
+                <div class="team-features">
+                    <div class="iconbutton" @click="switchscreen">
+                        <img src="/home.svg" />
+                    </div>
+                    [Insert Team]'s Assigned Features
+                    <div class="iconbutton" @click="">
+                        <img src="/filter.svg" />
+                    </div>
+                </div>
                 <!-- team features first div -->
                 <div class="background-prio-tasks">
                     <div class="foreground-prio-title">Priority Task/Current Task</div>
                     <div class="foreground-prio-tasks">
                         <div class="foreground-text">[Text text]</div>
+                    </div>
+                    <div class="icontextbutton" @click="">
+                        Drop
+                        <img src="/checkmark.svg" />
                     </div>
                 </div>
             </div>
@@ -96,7 +111,7 @@ h1 {
     display: flex;
     flex-direction: row;
     align-items: center;
-    transform: translateX(calc(100% - 50px));
+    transform: translateX(calc(100% - 52px));
     transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
@@ -156,7 +171,42 @@ h1 {
 h1 {
     color: white;
 }
-
+.iconbutton {
+    background-color: #25211f;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    pointer-events: auto;
+    position: relative;
+    width: 25px;
+    height: 25px;
+    border-width: 0px;
+    border-style: solid;
+    border-right: none;
+    margin-left: 10px;
+}
+.icontextbutton {
+    background-color: #f3bb5b;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    pointer-events: auto;
+    position: relative;
+    border-width: 0px;
+    border-style: solid;
+    border-right: none;
+    margin-left: 10px;
+    color: #4d3c35;
+    gap: 10px;
+    margin: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    height: 30px;
+}
 .icon {
     width: 30px;
     height: 30px;
@@ -172,9 +222,12 @@ h1 {
     display: flex;
     justify-content: center;
     text-align: center;
-    align-self: center;
     align-items: center;
     border-radius: 15px;
+    align-content: center;
+    justify-content: center;
+    display: flex;
+    margin: 10px;
 }
 .background-prio-tasks {
     display: flex;
