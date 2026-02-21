@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
+const menuVisible = ref(false)
 
 onMounted(() => {
     const invisbox = document.getElementById('invisbox')!
@@ -12,20 +13,27 @@ onMounted(() => {
         window.electron.ipcRenderer.send('set-ignore-mouse', true)
     })
 })
+function toggleMenu(): void {
+    menuVisible.value = !menuVisible.value
+}
 </script>
 
 <template>
     <div id="invisbox" class="invisible-box">
-        <div class="floating-widget">
+        <div class="floating-widget" @click="toggleMenu">
             <img src="/arrow_back.svg" alt="open arrow" />
         </div>
-        <div class="sidemenu"></div>
+        <div v-if="menuVisible" class="sidemenu"></div>
     </div>
 </template>
 
 <style scoped>
 .sidemenu {
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     background-color: bisque;
+    width: 100%;
+    height: 100%;
+    border-radius: 30px;
 }
 h1 {
     color: white;

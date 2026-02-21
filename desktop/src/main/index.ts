@@ -8,10 +8,10 @@ export function createSidePanel(): void {
 
     // Create the browser window.
     const mainWindow = new BrowserWindow({
-        x: screenWidth - 350,
-        y: Math.floor((screenHeight - 600) / 2),
-        width: 350,
-        height: 600,
+        x: screenWidth - 400,
+        y: Math.floor((screenHeight - 800) / 2),
+        width: 400,
+        height: 800,
         transparent: true,
         frame: true, // no title bar, close/minimize/etc controls
         alwaysOnTop: true,
