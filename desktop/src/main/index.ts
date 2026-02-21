@@ -3,7 +3,14 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+let sidePanelWindow: BrowserWindow | null = null
+let mainAppWindow: BrowserWindow | null = null
+
 export function createSidePanel(): void {
+    if (mainAppWindow && !mainAppWindow.isDestroyed()) {
+        mainAppWindow.close()
+        mainAppWindow = null
+    }
     const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize
 
     // Create the browser window.
@@ -32,9 +39,6 @@ export function createSidePanel(): void {
         return { action: 'deny' }
     })
     mainWindow.setIgnoreMouseEvents(true, { forward: true })
-    ipcMain.on('set-ignore-mouse', (_, ignore: boolean) => {
-        mainWindow.setIgnoreMouseEvents(ignore, { forward: true })
-    })
     // HMR mfor renderer base on electron-vite cli.
     // Load the remote URL for development or the local html file for production.
     if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
@@ -42,9 +46,18 @@ export function createSidePanel(): void {
     } else {
         mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
     }
+
+    sidePanelWindow = mainWindow
+    mainWindow.on('closed', () => {
+        sidePanelWindow = null
+    })
 }
 
-export function createWindow(): void {
+export function createMainWindow(): void {
+    if (sidePanelWindow && !sidePanelWindow.isDestroyed()) {
+        sidePanelWindow.close()
+        sidePanelWindow = null
+    }
     const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize
 
     // Create the browser window.
@@ -72,10 +85,6 @@ export function createWindow(): void {
         shell.openExternal(details.url)
         return { action: 'deny' }
     })
-    mainWindow.setIgnoreMouseEvents(true, { forward: true })
-    ipcMain.on('set-ignore-mouse', (_, ignore: boolean) => {
-        mainWindow.setIgnoreMouseEvents(ignore, { forward: true })
-    })
     // HMR mfor renderer base on electron-vite cli.
     // Load the remote URL for development or the local html file for production.
     if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
@@ -86,6 +95,12 @@ export function createWindow(): void {
 
     mainWindow.webContents.once('did-finish-load', () => {
         mainWindow.webContents.send('set-view', 'main')
+    })
+
+    mainAppWindow = mainWindow
+    mainWindow.on('closed', () => {
+        mainAppWindow = null
+        createSidePanel()
     })
 }
 
@@ -98,7 +113,7 @@ if (!gotTheLock) {
     app.on('second-instance', () => {
         const windows = BrowserWindow.getAllWindows()
         if (windows.length <= 1) {
-            createWindow()
+            createMainWindow()
         } else {
             const mainWin = windows.find((w) => !w.isAlwaysOnTop()) ?? windows[0]
             if (mainWin.isMinimized()) mainWin.restore()
@@ -121,14 +136,25 @@ app.whenReady().then(() => {
         optimizer.watchWindowShortcuts(window)
     })
 
-    // IPC test
-    ipcMain.on('ping', () => console.log('pong'))
+    // window triggers
+    ipcMain.on('open-main-window', () => {
+        createMainWindow()
+    })
+    ipcMain.on('open-side-window', () => {
+        createSidePanel()
+    })
+
+    ipcMain.on('set-ignore-mouse', (_, ignore: boolean) => {
+        if (sidePanelWindow && !sidePanelWindow.isDestroyed()) {
+            sidePanelWindow.setIgnoreMouseEvents(ignore, { forward: true })
+        }
+    })
 
     createSidePanel()
 
     app.on('activate', function () {
         // create main window if only the setup window is open
-        if (BrowserWindow.getAllWindows().length === 1) createWindow()
+        if (BrowserWindow.getAllWindows().length === 1) createMainWindow()
     })
 })
 
