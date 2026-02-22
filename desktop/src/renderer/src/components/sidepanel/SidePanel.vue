@@ -1,8 +1,41 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, Ref } from 'vue'
+import PriorityTask from './PriorityTask.vue'
+import OtherTask from './OtherTask.vue'
+type Task = {
+    typeOfTask?: boolean
+    isImportantTask?: boolean
+    taskTitle: string
+    taskText: string
+    teamName: string
+}
 
 const menuVisible = ref(false)
-
+const priorityTask: Ref<Task> = ref({
+    typeOfTask: true,
+    isImportantTask: false,
+    taskTitle: 'example title',
+    taskText: '[text task]',
+    teamName: '[Team Name]'
+})
+const otherTask: Ref<Task[]> = ref([
+    {
+        taskTitle: 'example title',
+        taskText: '[text task]',
+        teamName: '[Team Name]',
+        isImportantTask: true
+    },
+    {
+        taskTitle: 'example title',
+        taskText: '[text task]',
+        teamName: '[Team Name]'
+    },
+    {
+        taskTitle: 'example title',
+        taskText: '[text task]',
+        teamName: '[Team Name]'
+    }
+])
 onMounted(() => {
     const invisbox = document.getElementById('invisbox')!
 
@@ -32,42 +65,29 @@ const arrowicon = computed(() => (menuVisible.value ? '/arrow_forward.svg' : '/a
 function toggleMenu(): void {
     menuVisible.value = !menuVisible.value
 }
-function switchscreen(): void {
-    window.electron.ipcRenderer.send('open-main-window')
-}
 </script>
 
 <template>
     <div id="invisbox" class="invisible-box">
         <!-- side menu panel, slides in/out -->
         <div class="sidemenudiv" :class="{ visible: menuVisible }">
-            <div id="buttonbox">
-                <div class="floating-widget" @click="toggleMenu">
-                    <img :src="arrowicon" alt="close arrow" />
-                </div>
+            <div class="floating-widget" @click="toggleMenu">
+                <img :src="arrowicon" alt="close arrow" />
             </div>
             <div class="sidemenu">
-                <!-- menu, put all divs in here -->
-                <div class="team-features">
-                    <div class="iconbutton" @click="switchscreen">
-                        <img src="/home.svg" />
-                    </div>
-                    [Insert Team]'s Assigned Features
-                    <div class="iconbutton" @click="">
-                        <img src="/filter.svg" />
-                    </div>
-                </div>
-                <!-- team features first div -->
-                <div class="background-prio-tasks">
-                    <div class="foreground-prio-title">Priority Task/Current Task</div>
-                    <div class="foreground-prio-tasks">
-                        <div class="foreground-text">[Text text]</div>
-                    </div>
-                    <div class="icontextbutton" @click="">
-                        Drop
-                        <img src="/checkmark.svg" />
-                    </div>
-                </div>
+                <PriorityTask
+                    :task-title="priorityTask.taskTitle"
+                    :task-text="priorityTask.taskText"
+                    :team-name="priorityTask.teamName"
+                />
+                <OtherTask
+                    v-for="task in otherTask"
+                    :key="task.taskTitle"
+                    :task-title="task.taskTitle"
+                    :task-text="task.taskText"
+                    :team-name="task.teamName"
+                    :is-important-task="task.isImportantTask ?? false"
+                />
             </div>
         </div>
     </div>
@@ -77,12 +97,15 @@ function switchscreen(): void {
 .sidemenu {
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     background-color: #e9c17d;
-    width: 80%;
-    height: 100%;
+    width: 350px;
+    height: 100vh;
     border-radius: 30px;
     display: flex;
     justify-content: flex-start;
     flex-direction: column;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    pointer-events: auto;
 }
 h1 {
     color: white;
@@ -92,8 +115,7 @@ h1 {
     top: 0;
     right: 0;
     background-color: transparent;
-    border-width: 1px;
-    border-style: solid;
+    border-width: 0px;
     pointer-events: none;
     width: 100%;
     height: 100vh;
@@ -114,27 +136,9 @@ h1 {
     transform: translateX(calc(100% - 52px));
     transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
-
 .sidemenudiv.visible {
     transform: translateX(0%);
 }
-
-#buttonbox {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: center;
-    justify-content: center;
-    pointer-events: auto;
-}
-
-.sidemenu {
-    background-color: #e9c17d;
-    width: 350px;
-    height: 100%;
-    border-radius: 30px;
-}
-
 /* Fade out the open button when menu is visible */
 .open-btn {
     opacity: 1;
@@ -171,100 +175,11 @@ h1 {
 h1 {
     color: white;
 }
-.iconbutton {
-    background-color: #25211f;
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    pointer-events: auto;
-    position: relative;
-    width: 25px;
-    height: 25px;
-    border-width: 0px;
-    border-style: solid;
-    border-right: none;
-    margin-left: 10px;
-}
-.icontextbutton {
-    background-color: #f3bb5b;
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    pointer-events: auto;
-    position: relative;
-    border-width: 0px;
-    border-style: solid;
-    border-right: none;
-    margin-left: 10px;
-    color: #4d3c35;
-    gap: 10px;
-    margin: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-    height: 30px;
-}
+
 .icon {
     width: 30px;
     height: 30px;
     color: #a0a0a0;
-}
-
-.team-features {
-    width: 90%;
-    height: 40px;
-    background-color: #ffebba;
-    margin: 20px;
-    color: black;
-    display: flex;
-    justify-content: center;
-    text-align: center;
-    align-items: center;
-    border-radius: 15px;
-    align-content: center;
-    justify-content: center;
-    display: flex;
-    margin: 10px;
-}
-.background-prio-tasks {
-    display: flex;
-    width: 90%;
-    height: 200px;
-    border-radius: 50px;
-    background-color: #ffebba;
-    border-radius: 15px;
-    align-self: center;
-    align-items: center;
-    flex-direction: column;
-}
-
-.foreground-prio-tasks {
-    width: 90%;
-    height: 120px;
-    background-color: #f3bb5b;
-    border-radius: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.foreground-text {
-    width: 95%;
-    height: 105px;
-    background-color: #fff4e0;
-    border-radius: 15px;
-    text-align: center;
-}
-.foreground-prio-title {
-    width: 90%;
-    height: 20px;
-    background-color: #f3bb5b;
-    border-radius: 15px;
-    text-align: center;
-    margin: 5px;
-    color: black;
 }
 #other-task-background {
     width: 90%;
@@ -275,5 +190,8 @@ h1 {
 #background-large {
     width: 80%;
     height: 480px;
+}
+.sidemenu::-webkit-scrollbar {
+    display: none;
 }
 </style>
