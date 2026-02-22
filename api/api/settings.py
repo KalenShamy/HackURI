@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import certifi
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -68,6 +69,9 @@ DATABASES = {
         'ENGINE': 'django_mongodb_backend',
         'NAME': os.getenv('MONGODB_NAME', 'gittask'),
         'HOST': os.getenv('MONGODB_URI', 'mongodb://localhost:27017/'),
+        'OPTIONS': {
+            'tlsCAFile': certifi.where(),
+        },
     }
 }
 
@@ -94,14 +98,9 @@ REST_FRAMEWORK = {
 }
 
 # ---------------------------------------------------------------------------
-# CORS — allow the Electron dev server
+# CORS — allow all origins (auth is enforced via token, not origin)
 # ---------------------------------------------------------------------------
-CORS_ALLOWED_ORIGINS = os.getenv(
-    'CORS_ALLOWED_ORIGINS',
-    'http://localhost:5173',
-).split(',')
-
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True
 
 # ---------------------------------------------------------------------------
 # Auth
@@ -141,8 +140,3 @@ GITHUB_WEBHOOK_SECRET = os.getenv('GITHUB_WEBHOOK_SECRET', '')
 # ---------------------------------------------------------------------------
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
 
-# ---------------------------------------------------------------------------
-# Slack Bot
-# ---------------------------------------------------------------------------
-SLACK_BOT_TOKEN = os.getenv('SLACK_BOT_TOKEN', '')
-SLACK_SIGNING_SECRET = os.getenv('SLACK_SIGNING_SECRET', '')

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import Workspace, Task
+from .models import Workspace, Feature, Task
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -9,6 +9,22 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email']
         read_only_fields = ['id']
+
+
+class FeatureSerializer(serializers.ModelSerializer):
+    task_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Feature
+        fields = [
+            'id', 'workspace', 'name', 'description', 'type',
+            'github_number', 'github_id', 'html_url', 'state',
+            'task_count', 'created_at', 'updated_at',
+        ]
+        read_only_fields = ['id', 'github_number', 'github_id', 'html_url', 'created_at', 'updated_at']
+
+    def get_task_count(self, obj):
+        return obj.tasks.count()
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -20,16 +36,17 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = [
-            'id', 'workspace', 'title', 'description', 'status', 'priority',
+            'id', 'feature', 'title', 'description', 'status', 'priority',
             'assigned_to', 'assigned_to_id', 'completed_by_commit',
-            'created_at', 'updated_at',
+            'checkbox_index', 'created_at', 'updated_at',
         ]
-        read_only_fields = ['id', 'completed_by_commit', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'completed_by_commit', 'checkbox_index', 'created_at', 'updated_at']
 
 
 class WorkspaceSerializer(serializers.ModelSerializer):
     created_by = UserSerializer(read_only=True)
     members = serializers.SerializerMethodField()
+    github_token = serializers.CharField(write_only=True, required=False, allow_blank=True)
 
     def get_members(self, obj):
         users = User.objects.filter(pk__in=obj.members)
@@ -40,9 +57,9 @@ class WorkspaceSerializer(serializers.ModelSerializer):
         model = Workspace
         fields = [
             'id', 'name', 'github_repo_url', 'github_repo_owner', 'github_repo_name',
-            'created_by', 'members', 'task_count', 'created_at', 'updated_at',
+            'github_token', 'created_by', 'members', 'task_count', 'created_at', 'updated_at',
         ]
         read_only_fields = ['id', 'created_by', 'webhook_id', 'created_at', 'updated_at']
 
     def get_task_count(self, obj):
-        return obj.tasks.count()
+        return Task.objects.filter(feature__workspace=obj).count()
