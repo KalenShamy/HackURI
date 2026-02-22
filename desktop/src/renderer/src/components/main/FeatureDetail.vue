@@ -13,7 +13,15 @@ defineEmits<{
 
 <template>
     <div class="desc-box">
-        <h2 class="detail-title">{{ feature.name }}</h2>
+        <div class="detail-title-row">
+            <h2 class="detail-title">{{ feature.name }}</h2>
+            <a
+                v-if="feature.github_number"
+                :href="feature.html_url"
+                class="github-issue-badge"
+                target="_blank"
+            >#{{ feature.github_number }}</a>
+        </div>
         <p class="detail-description">{{ feature.description }}</p>
     </div>
     <div class="detail-body">
@@ -125,10 +133,29 @@ defineEmits<{
     gap: 12px;
 }
 
+.detail-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 .detail-title {
     margin: 0;
     font-size: 20px;
     color: #3a2e0f;
+}
+.github-issue-badge {
+    font-size: 12px;
+    font-weight: bold;
+    color: #5a4a1e;
+    background-color: #e0d0a0;
+    padding: 2px 8px;
+    border-radius: 10px;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.github-issue-badge:hover {
+    background-color: #c8b870;
 }
 .detail-description {
     margin: 0;

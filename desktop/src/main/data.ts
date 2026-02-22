@@ -53,7 +53,123 @@ export class Store {
     getDecrypted(key: 'token' | 'github_token'): string | null {
         const val = this.data[key]
         if (!val) return null
-        return decrypt(val, this.secret)
+        try {
+            return decrypt(val, this.secret)
+        } catch {
+            // Stored value was encrypted with a different key (e.g. DATA_SECRET_KEY changed).
+            // Clear the stale entry so the user is prompted to re-authenticate.
+            this.set(key, null)
+            return null
+        }
+    }
+
+    private get baseUrl(): string {
+        return process.env.VITE_API_BASE_URL || 'http://localhost:8000'
+    }
+
+    reset(): void {
+        this.data = { ...emptyData }
+        writeFileSync(this.path, JSON.stringify(this.data))
+    }
+
+    private async apiFetch<T>(path: string): Promise<T> {
+        const token = this.getDecrypted('token')
+        const res = await fetch(`${this.baseUrl}/api${path}`, {
+            headers: { Authorization: `Token ${token}` }
+        })
+        if (res.status === 401) {
+            this.reset()
+            throw new Error('UNAUTHORIZED')
+        }
+        if (!res.ok) throw new Error(`API ${path} failed: ${res.status}`)
+        return res.json() as Promise<T>
+    }
+
+    async fetchWorkspaces(): Promise<Workspace[]> {
+        return this.apiFetch<Workspace[]>('/workspaces/')
+    }
+
+    async fetchWorkspace(id: string): Promise<Workspace> {
+        return this.apiFetch<Workspace>(`/workspaces/${id}/`)
+    }
+
+    async fetchFeatures(workspaceId: string): Promise<Feature[]> {
+        return this.apiFetch<Feature[]>(`/features/?workspace=${workspaceId}`)
+    }
+
+    async fetchTasks(params: { workspace?: string; feature?: string }): Promise<Task[]> {
+        const entries = Object.entries(params).filter(
+            (e): e is [string, string] => e[1] !== undefined
+        )
+        const qs = new URLSearchParams(entries)
+        return this.apiFetch<Task[]>(`/tasks/?${qs}`)
+    }
+
+    async createTask(payload: {
+        feature: string
+        title: string
+        description: string
+        status: string
+        priority: string
+    }): Promise<Task> {
+        const token = this.getDecrypted('token')
+        const res = await fetch(`${this.baseUrl}/api/tasks/`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Token ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        if (!res.ok) throw new Error(`API /tasks/ failed: ${res.status}`)
+        return res.json() as Promise<Task>
+    }
+
+    async createFeature(payload: {
+        workspace: string
+        name: string
+        description: string
+    }): Promise<Feature> {
+        const token = this.getDecrypted('token')
+        const res = await fetch(`${this.baseUrl}/api/features/`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Token ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        if (!res.ok) throw new Error(`API /features/ failed: ${res.status}`)
+        return res.json() as Promise<Feature>
+    }
+
+    async fetchGitHubRepos(): Promise<GitHubRepo[]> {
+        const token = this.getDecrypted('github_token')
+        const res = await fetch('https://api.github.com/user/repos?sort=updated&per_page=100', {
+            headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' }
+        })
+        if (!res.ok) throw new Error(`GitHub repos fetch failed: ${res.status}`)
+        return res.json() as Promise<GitHubRepo[]>
+    }
+
+    async createWorkspace(data: {
+        name: string
+        github_repo_url: string
+        github_repo_owner: string
+        github_repo_name: string
+    }): Promise<Workspace> {
+        const token = this.getDecrypted('token')
+        const githubToken = this.getDecrypted('github_token')
+        const res = await fetch(`${this.baseUrl}/api/workspaces/`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Token ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ ...data, github_token: githubToken })
+        })
+        if (!res.ok) throw new Error(`Create workspace failed: ${res.status}`)
+        return res.json() as Promise<Workspace>
     }
 }
 
@@ -86,7 +202,7 @@ export interface Data {
     user: User | null
     token: string | null
     github_token: string | null
-    workspaces: Workspace[]
+    workspaces: string[]
 }
 
 export interface User {
@@ -108,34 +224,38 @@ export interface Workspace {
     updated_at: string
 }
 
-export type FeatureType = 'issue' | 'pull_request'
-export type FeatureState = 'open' | 'closed'
-
 export interface Feature {
-    id: number
+    id: string
     workspace: string
     name: string
     description: string
-    type: FeatureType
+    type: 'issue' | 'pull_request'
     github_number: number | null
     github_id: number | null
     html_url: string
-    state: FeatureState
+    state: 'open' | 'closed'
     task_count: number
     created_at: string
     updated_at: string
 }
 
-export type TaskStatus = 'todo' | 'in_progress' | 'done'
-export type TaskPriority = 'low' | 'medium' | 'high'
+export interface GitHubRepo {
+    id: number
+    name: string
+    full_name: string
+    html_url: string
+    owner: { login: string }
+    private: boolean
+    description: string | null
+}
 
 export interface Task {
     id: string
     feature: string
     title: string
     description: string
-    status: TaskStatus
-    priority: TaskPriority
+    status: 'todo' | 'in_progress' | 'done'
+    priority: 'low' | 'medium' | 'high'
     assigned_to: User | null
     completed_by_commit: string
     checkbox_index: number | null

@@ -38,10 +38,6 @@ defineEmits<{
                     <label class="settings-label">GitHub Integration</label>
                     <div class="settings-placeholder">Connected</div>
                 </div>
-                <div class="settings-section">
-                    <label class="settings-label">Slack Integration</label>
-                    <div class="settings-placeholder">Not connected</div>
-                </div>
             </div>
         </div>
     </div>

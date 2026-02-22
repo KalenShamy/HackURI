@@ -1,5 +1,5 @@
 import json
-import logging
+import traceback
 from urllib.parse import urlencode
 
 import requests
@@ -11,8 +11,6 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
-
-logger = logging.getLogger(__name__)
 
 
 @api_view(['GET'])
@@ -52,7 +50,7 @@ def github_oauth_callback(request):
     if not access_token:
         error = token_data.get('error', 'Unknown error')
         error_desc = token_data.get('error_description', '')
-        logger.error(f'GitHub OAuth failed: {error} - {error_desc}')
+        print(f'[ERROR] GitHub OAuth failed: {error} - {error_desc}')
         return Response(
             {'error': 'Failed to get access token', 'details': f'{error}: {error_desc}'},
             status=400,
@@ -67,7 +65,7 @@ def github_oauth_callback(request):
     github_user = user_response.json()
 
     if 'login' not in github_user:
-        logger.error(f'GitHub user API failed: {github_user}')
+        print(f'[ERROR] GitHub user API failed: {github_user}')
         return Response(
             {'error': 'Failed to fetch GitHub profile', 'details': github_user.get('message', 'unknown')},
             status=400,
@@ -83,7 +81,8 @@ def github_oauth_callback(request):
         # Generate DRF token
         token, _ = Token.objects.get_or_create(user=user)
     except Exception:
-        logger.exception('Failed to create/get user or token')
+        print('[ERROR] Failed to create/get user or token')
+        traceback.print_exc()
         return Response({'error': 'Server error during user creation'}, status=500)
 
     return Response({

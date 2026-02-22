@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: desktop
+appId: com.hivemind.app
+productName: HiveMind
 protocols:
   - name: HiveMind
     schemes:
@@ -16,7 +16,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: desktop
+  executableName: HiveMind
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

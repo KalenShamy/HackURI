@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-HackURI is a GitHub-integrated task management system with Slack and AI (Gemini) support. It has two components:
+HackURI is a GitHub-integrated task management system with AI (Gemini) support. It has two components:
 
 - **`api/`** — Django REST Framework backend with MongoDB
 - **`desktop/`** — Electron + Vue 3 + TypeScript desktop application
@@ -39,9 +39,9 @@ python manage.py shell            # Django shell
 ### Backend (`api/`)
 
 - **`HackAPI/models.py`** — `Workspace` and `Task` MongoDB models using `django-mongodb-backend`. Uses `ObjectId` PKs.
-- **`HackAPI/views/`** — ViewSets per domain: `auth.py` (GitHub OAuth), `workspaces.py`, `tasks.py`, `webhooks.py` (GitHub + Slack events), `slack.py`
-- **`HackAPI/services/`** — External integrations: `gemini.py` (Google AI), `slack.py` (Slack SDK)
-- **`api/settings.py`** — All config loaded from `.env`: MongoDB URI, GitHub OAuth, Gemini key, Slack tokens, CORS
+- **`HackAPI/views/`** — ViewSets per domain: `auth.py` (GitHub OAuth), `workspaces.py`, `tasks.py`, `webhooks.py` (GitHub events)
+- **`HackAPI/services/`** — External integrations: `gemini.py` (Google AI)
+- **`api/settings.py`** — All config loaded from `.env`: MongoDB URI, GitHub OAuth, Gemini key, CORS
 
 Auth flow: GitHub OAuth → API exchanges code for token → returns Django `Token` + GitHub token + user profile.
 
@@ -59,7 +59,7 @@ Auth flow: GitHub OAuth → API exchanges code for token → returns Django `Tok
 ```
 DJANGO_SECRET_KEY, DEBUG, ALLOWED_HOSTS, MONGODB_URI, MONGODB_NAME,
 GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, GITHUB_WEBHOOK_SECRET,
-GEMINI_API_KEY, CORS_ALLOWED_ORIGINS, SLACK_BOT_TOKEN, SLACK_SIGNING_SECRET
+GEMINI_API_KEY, CORS_ALLOWED_ORIGINS
 ```
 
 **`desktop/.env`:**

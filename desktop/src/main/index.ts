@@ -1,14 +1,15 @@
-import 'dotenv/config'
 import { app, shell, BrowserWindow, ipcMain, screen } from 'electron'
 import { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+
+const isDev = !app.isPackaged
 import { emptyData, Store, type User } from './data'
 
 let sidePanelWindow: BrowserWindow | null = null
 let mainAppWindow: BrowserWindow | null = null
 let displayTrackingInterval: ReturnType<typeof setInterval> | null = null
 let lastDisplayId: number | null = null
+let isQuitting = false
 
 const store = new Store({
     configName: 'Desktop',
@@ -63,7 +64,7 @@ export function createSidePanel(): void {
     mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
     // HMR mfor renderer base on electron-vite cli.
     // Load the remote URL for development or the local html file for production.
-    if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    if (isDev && process.env['ELECTRON_RENDERER_URL']) {
         mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
     } else {
         mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
@@ -145,7 +146,7 @@ export function createMainWindow(): void {
     })
     // HMR mfor renderer base on electron-vite cli.
     // Load the remote URL for development or the local html file for production.
-    if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    if (isDev && process.env['ELECTRON_RENDERER_URL']) {
         mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
     } else {
         mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
@@ -158,7 +159,7 @@ export function createMainWindow(): void {
     mainAppWindow = mainWindow
     mainWindow.on('closed', () => {
         mainAppWindow = null
-        createSidePanel()
+        if (!isQuitting) createSidePanel()
     })
 }
 
@@ -202,7 +203,7 @@ export function createSetupWindow(): void {
     })
     // HMR mfor renderer base on electron-vite cli.
     // Load the remote URL for development or the local html file for production.
-    if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    if (isDev && process.env['ELECTRON_RENDERER_URL']) {
         mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
     } else {
         mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
@@ -213,7 +214,7 @@ export function createSetupWindow(): void {
     })
 
     mainWindow.on('closed', () => {
-        if (isSetupDone()) {
+        if (!isQuitting && isSetupDone()) {
             createSidePanel()
         }
     })
@@ -281,13 +282,21 @@ if (!gotTheLock) {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
     // Set app user model id for windows
-    electronApp.setAppUserModelId('com.electron')
+    if (process.platform === 'win32') app.setAppUserModelId('com.hivemind.app')
 
     // Default open or close DevTools by F12 in development
     // and ignore CommandOrControl + R in production.
     // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
     app.on('browser-window-created', (_, window) => {
-        optimizer.watchWindowShortcuts(window)
+        window.webContents.on('before-input-event', (event, input) => {
+            if (input.key === 'F12') {
+                if (isDev) window.webContents.toggleDevTools()
+                event.preventDefault()
+            }
+            if (!isDev && input.control && input.key === 'r') {
+                event.preventDefault()
+            }
+        })
     })
 
     // window triggers
@@ -313,6 +322,59 @@ app.whenReady().then(() => {
         }
     })
 
+    ipcMain.handle('fetch-workspaces', async () => {
+        try {
+            return await store.fetchWorkspaces()
+        } catch (e) {
+            if (e instanceof Error && e.message === 'UNAUTHORIZED') {
+                BrowserWindow.getAllWindows().forEach((win) => win.close())
+                createSetupWindow()
+            }
+            throw e
+        }
+    })
+    ipcMain.handle('fetch-workspace', async (_, id: string) => await store.fetchWorkspace(id))
+    ipcMain.handle(
+        'fetchFeatures',
+        async (_, workspaceId: string) => await store.fetchFeatures(workspaceId)
+    )
+    ipcMain.handle(
+        'fetchTasks',
+        async (_, params: { workspace?: string; feature?: string }) =>
+            await store.fetchTasks(params)
+    )
+    ipcMain.handle(
+        'create-task',
+        async (
+            _,
+            payload: {
+                feature: string
+                title: string
+                description: string
+                status: string
+                priority: string
+            }
+        ) => await store.createTask(payload)
+    )
+    ipcMain.handle(
+        'create-feature',
+        async (_, payload: { workspace: string; name: string; description: string }) =>
+            await store.createFeature(payload)
+    )
+    ipcMain.handle('fetch-github-repos', async () => await store.fetchGitHubRepos())
+    ipcMain.handle(
+        'create-workspace',
+        async (
+            _,
+            data: {
+                name: string
+                github_repo_url: string
+                github_repo_owner: string
+                github_repo_name: string
+            }
+        ) => await store.createWorkspace(data)
+    )
+
     if (isSetupDone()) {
         createSidePanel()
     } else {
@@ -328,13 +390,15 @@ app.whenReady().then(() => {
     })
 })
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+app.on('before-quit', () => {
+    isQuitting = true
+})
+
+// Quit when all windows are closed. The side panel is invisible/non-interactive,
+// so keeping the process alive after the user closes all windows would leave a
+// ghost process that blocks relaunching (single-instance lock).
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit()
-    }
+    app.quit()
 })
 
 // In this file you can include the rest of your app's specific main process

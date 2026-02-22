@@ -14,6 +14,8 @@ export interface Feature {
     deadline: string
     members: string[]
     tasks: Task[]
+    github_number: number | null
+    html_url: string
 }
 
 export type PanelMode = 'idle' | 'viewing' | 'viewingFeature' | 'adding' | 'addingFeature'

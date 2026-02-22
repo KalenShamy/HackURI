@@ -5,6 +5,7 @@ defineProps<{
 
 defineEmits<{
     (e: 'toggle-settings'): void
+    (e: 'switch-workspace'): void
 }>()
 </script>
 
@@ -12,6 +13,14 @@ defineEmits<{
     <div class="menu-title">
         <img src="/LOGOCIRCLE.png" alt="Home Icon" class="menu-title-icon" />
         <span class="menu-title-content"> {{ teamName }}'s Current Workspace </span>
+        <button class="menu-title-switch-button" @click="$emit('switch-workspace')">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="menu-title-switch-icon">
+                <path d="M17 3l4 4-4 4"/>
+                <path d="M3 7h18"/>
+                <path d="M7 21l-4-4 4-4"/>
+                <path d="M21 17H3"/>
+            </svg>
+        </button>
         <button class="menu-title-settings-button" @click="$emit('toggle-settings')">
             <img src="/settings.png" alt="Settings Icon" class="menu-title-settings-icon" />
         </button>
@@ -67,6 +76,25 @@ defineEmits<{
 .menu-title-settings-icon {
     height: 30px;
     width: 30px;
+}
+
+.menu-title-switch-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 12px;
+    z-index: 1;
+    color: inherit;
+}
+
+.menu-title-switch-icon {
+    height: 26px;
+    width: 26px;
 }
 
 @media (max-width: 900px) {

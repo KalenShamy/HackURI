@@ -4,7 +4,7 @@ This file provides strict guidance to GEMINI Code (and any other agentic assista
 
 ## Project Overview
 
-HackURI is a GitHub-integrated task management system with Slack and AI (Gemini) support, built for the "Ocean's Edge Ventures" hackathon track.
+HackURI is a GitHub-integrated task management system with AI (Gemini) support, built for the "Ocean's Edge Ventures" hackathon track.
 
 - **Frontend:** Electron + Vue 3 + TypeScript (3-stage UI: Floating Arrow -> Mini Menu -> Full Screen)
 - **Backend:** Django REST Framework + MongoDB

@@ -5,6 +5,8 @@ from .models import Workspace, Feature, Task
 
 
 class UserSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
+
     class Meta:
         model = User
         fields = ['id', 'username', 'email']
@@ -12,6 +14,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class FeatureSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
+    workspace = serializers.PrimaryKeyRelatedField(queryset=Workspace.objects.all())
     task_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -26,8 +30,16 @@ class FeatureSerializer(serializers.ModelSerializer):
     def get_task_count(self, obj):
         return obj.tasks.count()
 
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if ret.get('workspace') is not None:
+            ret['workspace'] = str(ret['workspace'])
+        return ret
+
 
 class TaskSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
+    feature = serializers.PrimaryKeyRelatedField(queryset=Feature.objects.all(), allow_null=True)
     assigned_to = UserSerializer(read_only=True)
     assigned_to_id = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), source='assigned_to', write_only=True, required=False, allow_null=True
@@ -42,16 +54,23 @@ class TaskSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'completed_by_commit', 'checkbox_index', 'created_at', 'updated_at']
 
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if ret.get('feature') is not None:
+            ret['feature'] = str(ret['feature'])
+        return ret
+
 
 class WorkspaceSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
     created_by = UserSerializer(read_only=True)
     members = serializers.SerializerMethodField()
     github_token = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    task_count = serializers.SerializerMethodField()
 
     def get_members(self, obj):
         users = User.objects.filter(pk__in=obj.members)
         return UserSerializer(users, many=True).data
-    task_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Workspace
