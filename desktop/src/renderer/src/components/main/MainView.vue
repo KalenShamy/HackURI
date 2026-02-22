@@ -273,6 +273,16 @@ async function handleCreateFeature(payload: {
     selectedTaskId.value = null
     panelMode.value = 'viewingFeature'
 }
+
+// --- Remove task from feature ---
+function handleRemoveFromFeature(): void {
+    if (!selectedFeatureId.value || !selectedTaskId.value) return
+    const feature = features.value.find((f) => f.id === selectedFeatureId.value)
+    if (!feature) return
+    feature.tasks = feature.tasks.filter((t) => t.id !== selectedTaskId.value)
+    selectedTaskId.value = null
+    panelMode.value = 'viewingFeature'
+}
 </script>
 
 <template>
@@ -373,6 +383,7 @@ async function handleCreateFeature(payload: {
                         v-if="panelMode === 'viewing' && selectedTask"
                         :task="selectedTask"
                         :feature-name="selectedFeatureName"
+                        @remove-from-feature="handleRemoveFromFeature"
                     />
 
                     <AddTaskForm

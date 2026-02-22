@@ -6,6 +6,10 @@ defineProps<{
     task: Task
     featureName: string
 }>()
+
+const emit = defineEmits<{
+    removeFromFeature: []
+}>()
 </script>
 
 <template>
@@ -35,6 +39,7 @@ defineProps<{
                 {{ task.priority }}
             </span>
         </div>
+        <button class="remove-btn" @click="emit('removeFromFeature')">Remove from Feature</button>
     </div>
 </template>
 
@@ -125,5 +130,22 @@ defineProps<{
     border-radius: 12px;
     color: white;
     text-transform: uppercase;
+}
+.remove-btn {
+    margin-top: auto;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 10px;
+    background-color: #c0392b;
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    align-self: flex-start;
+    transition: background-color 0.2s;
+}
+
+.remove-btn:hover {
+    background-color: #a93226;
 }
 </style>
