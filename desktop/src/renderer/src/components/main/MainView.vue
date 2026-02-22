@@ -4,7 +4,7 @@
     <main>
         <div class="whole-box">
             <div id="menu-title">[Insert Team]'s Current Workspace</div>
-            <div id="trans" class="menu-layout">
+            <div class="menu-layout">
                 <div class="menu-box">
                     <div id="toolbar">
                         <div class="toolbar-boxes">Sort By</div>
@@ -119,18 +119,17 @@ main {
 }
 .whole-box {
     background-color: #ffebba;
-    width: 100vw;
+    padding: 20px;
     height: 100vh;
+    box-sizing: border-box;
     display: flex;
-    justify-content: center;
-    align-items: flex-end;
-}
-#trans {
-    background-color: transparent;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
 }
 .menu-layout {
-    width: 92.5%;
-    height: 80%;
+    width: calc(100%);
+    flex: 1;
     min-height: 0;
     border-radius: 15px;
     align-items: center;
@@ -198,19 +197,24 @@ main {
     text-overflow: ellipsis;
 }
 #menu-title {
-    position: absolute;
     text-align: center;
     align-self: flex-start;
-    width: 87.5%;
     height: 55px;
-    padding: 25px;
+    width: calc(100% - 50px);
+    padding: 20px 25px;
     background-color: #f3bb5b;
     border-radius: 40px;
-    margin: 20px;
     font-size: 40px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+@media (max-width: 900px) {
+    #menu-title {
+        height: 35px;
+        font-size: 28px;
+    }
 }
 
 #desc-box {
