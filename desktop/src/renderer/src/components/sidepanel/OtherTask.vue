@@ -30,7 +30,9 @@ function toggleExpand(): void {
             <!-- Always visible header -->
             <div class="task-header">
                 <div class="task-title-container">
-                    <span class="task-title">{{ taskTitle }}</span>
+                    <span class="task-title">
+                        <img src="/hexagon.svg" alt="task icon" />{{ taskTitle }}
+                    </span>
                 </div>
                 <div class="iconbutton toggle-btn" @click="toggleExpand">
                     <span v-if="isExpanded" style="color: white">▲</span>
@@ -75,8 +77,8 @@ function toggleExpand(): void {
     width: 95%;
     background-color: #fff4e0;
     border-radius: 15px;
-    text-align: center;
-    padding: 10px;
+    text-align: left;
+    padding: 5px;
 }
 .background-prio-tasks {
     margin-top: 15px;
@@ -101,8 +103,10 @@ function toggleExpand(): void {
     gap: 10px;
 }
 .task-title {
+    align-items: center;
+    display: flex;
+    gap: 10px;
     font-size: 1.1em;
-    text-decoration: underline;
     color: #4d3c35;
 }
 .task-body-wrapper {
@@ -149,8 +153,11 @@ function toggleExpand(): void {
     border-radius: 15px;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     padding: 10px 0;
+    max-height: 200px;
+    overflow-y: auto;
+    color: #4d3c35;
 }
 .buttonbox {
     display: flex;
@@ -195,7 +202,6 @@ function toggleExpand(): void {
     align-items: center;
     border-radius: 15px;
     font-size: 1.2em;
-    text-decoration: underline;
     box-sizing: border-box;
 }
 </style>
