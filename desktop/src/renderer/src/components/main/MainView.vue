@@ -95,6 +95,7 @@ details {
     background-color: #ffebba;
     color: black;
     width: 90%;
+    border-radius: 10px;
 }
 
 details > .features {
@@ -131,7 +132,7 @@ main {
     width: calc(100%);
     flex: 1;
     min-height: 0;
-    border-radius: 15px;
+    border-radius: 10px;
     align-items: center;
     display: flex;
 }
@@ -152,7 +153,11 @@ main {
     width: 90%;
     background-color: #e9c17d;
     border-radius: 15px;
-    margin: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
 }
 #task-label {
     display: flex;
@@ -174,7 +179,7 @@ main {
 #toolbar {
     background-color: transparent;
     width: 95%;
-    height: 100px;
+    height: 70px;
     display: flex;
     text-align: center;
     justify-content: center;
@@ -203,11 +208,11 @@ main {
     width: calc(100% - 50px);
     padding: 20px 25px;
     background-color: #f3bb5b;
-    border-radius: 40px;
     font-size: 40px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: black;
 }
 
 @media (max-width: 900px) {
@@ -220,7 +225,7 @@ main {
 #desc-box {
     align-self: center;
     width: 80%;
-    height: 5%;
+    height: 10%;
     border-radius: 15px;
     background-color: #ffebba;
     margin-top: 10%;
@@ -232,9 +237,7 @@ main {
     height: 20%;
     border-radius: 15px;
     background-color: #ffebba;
-    margin-left: 11%;
-    margin-top: 8%;
-    margin-bottom: 8%;
+    align-self: center;
     justify-content: center;
     align-items: center;
     color: black;
@@ -244,16 +247,12 @@ main {
 }
 .people-box {
     display: flex;
-    align-self: center;
-    width: 80%;
-    height: 10%;
-    border-radius: 15px;
-    background-color: #ffebba;
-    margin-left: 10%;
-    margin-top: 6%;
-    margin-bottom: 6%;
     justify-content: center;
     align-items: center;
+    width: 80%;
+    height: 10%;
+    border-radius: 10px;
+    background-color: #ffebba;
     color: black;
     white-space: nowrap;
     overflow: hidden;
@@ -264,10 +263,10 @@ main {
 }
 #background-box-2 {
     align-self: center;
-    width: 75%;
+    width: 90%;
     height: 75%;
     border-radius: 15px;
     background-color: #ffebba;
-    margin-top: 55px;
+    margin-top: 30px;
 }
 </style>
