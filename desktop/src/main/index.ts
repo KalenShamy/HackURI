@@ -5,18 +5,27 @@ import icon from '../../resources/icon.png?asset'
 
 let sidePanelWindow: BrowserWindow | null = null
 let mainAppWindow: BrowserWindow | null = null
+let displayTrackingInterval: ReturnType<typeof setInterval> | null = null
+let lastDisplayId: number | null = null
+
+function getActiveDisplay(): Electron.Display {
+    const cursorPoint = screen.getCursorScreenPoint()
+    return screen.getDisplayNearestPoint(cursorPoint)
+}
 
 export function createSidePanel(): void {
     if (mainAppWindow && !mainAppWindow.isDestroyed()) {
         mainAppWindow.close()
         mainAppWindow = null
     }
-    const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize
+    const activeDisplay = getActiveDisplay()
+    const { x, y, width, height } = activeDisplay.workArea
+    lastDisplayId = activeDisplay.id
 
     // Create the browser window.
     const mainWindow = new BrowserWindow({
-        x: screenWidth - 400,
-        y: Math.floor((screenHeight - 800) / 2),
+        x: x + width - 400,
+        y: y + Math.floor((height - 800) / 2),
         width: 400,
         height: 800,
         transparent: true,
@@ -39,6 +48,7 @@ export function createSidePanel(): void {
         return { action: 'deny' }
     })
     mainWindow.setIgnoreMouseEvents(true, { forward: true })
+    mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
     // HMR mfor renderer base on electron-vite cli.
     // Load the remote URL for development or the local html file for production.
     if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
@@ -50,7 +60,41 @@ export function createSidePanel(): void {
     sidePanelWindow = mainWindow
     mainWindow.on('closed', () => {
         sidePanelWindow = null
+        stopDisplayTracking()
     })
+
+    startDisplayTracking()
+}
+
+// Polls every 500ms to check if the cursor moved to a different display,
+// and snaps the side panel to that display's right edge.
+function startDisplayTracking(): void {
+    stopDisplayTracking()
+    displayTrackingInterval = setInterval(() => {
+        if (!sidePanelWindow || sidePanelWindow.isDestroyed()) {
+            stopDisplayTracking()
+            return
+        }
+        const activeDisplay = getActiveDisplay()
+        // Only reposition when the display actually changed
+        if (activeDisplay.id !== lastDisplayId) {
+            lastDisplayId = activeDisplay.id
+            const { x, y, width, height } = activeDisplay.workArea
+            sidePanelWindow.setBounds({
+                x: x + width - 400,
+                y: y + Math.floor((height - 800) / 2),
+                width: 400,
+                height: 800
+            })
+        }
+    }, 500)
+}
+
+function stopDisplayTracking(): void {
+    if (displayTrackingInterval) {
+        clearInterval(displayTrackingInterval)
+        displayTrackingInterval = null
+    }
 }
 
 export function createMainWindow(): void {
@@ -58,12 +102,13 @@ export function createMainWindow(): void {
         sidePanelWindow.close()
         sidePanelWindow = null
     }
-    const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize
+    const activeDisplay = getActiveDisplay()
+    const { x, y, width, height } = activeDisplay.workArea
 
     // Create the browser window.
     const mainWindow = new BrowserWindow({
-        x: Math.floor((screenWidth - 800) / 2),
-        y: Math.floor((screenHeight - 600) / 2),
+        x: x + Math.floor((width - 800) / 2),
+        y: y + Math.floor((height - 600) / 2),
         width: 800,
         height: 600,
         transparent: false,
