@@ -70,6 +70,10 @@ export function createSidePanel(): void {
         mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
     }
 
+    mainWindow.webContents.once('did-finish-load', () => {
+        mainWindow.webContents.send('set-view', 'sidepanel')
+    })
+
     sidePanelWindow = mainWindow
     mainWindow.on('closed', () => {
         sidePanelWindow = null

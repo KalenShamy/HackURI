@@ -10,7 +10,7 @@ enum pages {
     setup = 'setup'
 }
 
-const activePage = ref(pages.sidepanel)
+const activePage = ref<pages | null>(null)
 
 window.electron.ipcRenderer.on('set-view', (_, value: string) => {
     activePage.value = value as pages
