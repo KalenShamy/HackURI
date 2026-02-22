@@ -1,5 +1,9 @@
 appId: com.electron.app
 productName: desktop
+protocols:
+  - name: HiveMind
+    schemes:
+      - hivemind
 directories:
   buildResources: build
 files:

@@ -212,6 +212,7 @@ h1 {
 .floating-widget.hidden {
     opacity: 0;
     pointer-events: none;
+    transition-delay: 4s;
 }
 
 h1 {

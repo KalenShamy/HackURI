@@ -1,9 +1,10 @@
-from .auth import github_oauth_callback, github_oauth_url
+from .auth import desktop_auth_callback, github_oauth_callback, github_oauth_url
 from .tasks import FeatureViewSet, TaskViewSet
 from .workspaces import WorkspaceViewSet
 from .webhooks import github_webhook
 
 __all__ = [
+    'desktop_auth_callback',
     'github_oauth_callback',
     'github_oauth_url',
     'FeatureViewSet',

@@ -1,5 +1,5 @@
 import json
-import google.generativeai as genai
+from google import genai
 from django.conf import settings
 
 
@@ -11,8 +11,7 @@ def analyze_commits(commit_messages: list[str], open_tasks: list[str]) -> list[s
     if not settings.GEMINI_API_KEY:
         return []
 
-    genai.configure(api_key=settings.GEMINI_API_KEY)
-    model = genai.GenerativeModel('gemini-2.0-flash')
+    client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
     prompt = (
         "You are an assistant that analyzes git commit messages to detect task completion.\n\n"
@@ -23,7 +22,7 @@ def analyze_commits(commit_messages: list[str], open_tasks: list[str]) -> list[s
         "Return an empty array if none match. Respond with ONLY the JSON array, no other text."
     )
 
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(model='gemini-2.0-flash', contents=prompt)
     text = response.text.strip()
 
     # Strip markdown code fences if present
