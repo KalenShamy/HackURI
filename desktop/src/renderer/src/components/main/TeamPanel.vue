@@ -21,7 +21,7 @@ defineProps<{
     <div class="menu-box-split">
         <div class="item-box">Undo last task</div>
         <div class="item-box">Past tasks</div>
-        <div class="item-box">Placeholder idk</div>
+        <!-- <div class="item-box">Placeholder idk</div> -->
     </div>
 </template>
 
