@@ -40,10 +40,10 @@ const otherTask: Ref<Task[]> = ref([
     }
 ])
 onMounted(() => {
-    const invisbox = document.getElementById('invisbox')!
+    const sideMenu = document.getElementById('sidemenudiv')!
 
     window.addEventListener('mousemove', (e) => {
-        const children = invisbox.getElementsByTagName('*')
+        const children = sideMenu.getElementsByTagName('*')
         let hovering = false
         for (const child of children) {
             const rect = child.getBoundingClientRect()
@@ -61,7 +61,7 @@ onMounted(() => {
         window.electron.ipcRenderer.send('set-ignore-mouse', !hovering)
     })
 
-    invisbox.addEventListener('mouseleave', () => {
+    sideMenu.addEventListener('mouseleave', () => {
         hoveringInvisBox.value = false
         window.electron.ipcRenderer.send('set-ignore-mouse', true)
     })
@@ -76,7 +76,7 @@ function toggleMenu(): void {
 <template>
     <div id="invisbox" class="invisible-box">
         <!-- side menu panel, slides in/out -->
-        <div class="sidemenudiv" :class="{ visible: menuVisible }">
+        <div id="sidemenudiv" class="sidemenudiv" :class="{ visible: menuVisible }">
             <div class="floating-widget" :class="{ hidden: !showButton }" @click="toggleMenu">
                 <img :src="arrowicon" alt="close arrow" />
             </div>
