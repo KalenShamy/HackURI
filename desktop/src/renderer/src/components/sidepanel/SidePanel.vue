@@ -11,36 +11,39 @@ type Task = {
 }
 
 const menuVisible = ref(false)
+const hoveringInvisBox = ref(false)
 const priorityTask: Ref<Task> = ref({
     typeOfTask: true,
     isImportantTask: false,
-    taskTitle: 'example title',
-    taskText: '[text task]',
-    teamName: '[Team Name]'
+    taskTitle: 'Important Task',
+    taskText:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt uLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt u',
+    teamName: '[TeamjijecfcmewifjfcewfefcmcewfceFwrfmnoicWRF NOUwrf grmnoiwfdmnoi Name]'
 })
 const otherTask: Ref<Task[]> = ref([
     {
-        taskTitle: 'example title',
-        taskText: '[text task]',
+        taskTitle: 'Task1',
+        taskText:
+            '"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."',
         teamName: '[Team Name]',
         isImportantTask: true
     },
     {
-        taskTitle: 'example title',
+        taskTitle: 'Task2',
         taskText: '[text task]',
         teamName: '[Team Name]'
     },
     {
-        taskTitle: 'example title',
+        taskTitle: 'Task3',
         taskText: '[text task]',
         teamName: '[Team Name]'
     }
 ])
 onMounted(() => {
-    const invisbox = document.getElementById('invisbox')!
+    const sideMenu = document.getElementById('sidemenudiv')!
 
     window.addEventListener('mousemove', (e) => {
-        const children = invisbox.getElementsByTagName('*')
+        const children = sideMenu.getElementsByTagName('*')
         let hovering = false
         for (const child of children) {
             const rect = child.getBoundingClientRect()
@@ -54,14 +57,17 @@ onMounted(() => {
                 break
             }
         }
+        hoveringInvisBox.value = hovering
         window.electron.ipcRenderer.send('set-ignore-mouse', !hovering)
     })
 
-    invisbox.addEventListener('mouseleave', () => {
+    sideMenu.addEventListener('mouseleave', () => {
+        hoveringInvisBox.value = false
         window.electron.ipcRenderer.send('set-ignore-mouse', true)
     })
 })
 const arrowicon = computed(() => (menuVisible.value ? '/arrow_forward.svg' : '/arrow_back.svg'))
+const showButton = computed(() => menuVisible.value || hoveringInvisBox.value)
 function toggleMenu(): void {
     menuVisible.value = !menuVisible.value
 }
@@ -70,8 +76,8 @@ function toggleMenu(): void {
 <template>
     <div id="invisbox" class="invisible-box">
         <!-- side menu panel, slides in/out -->
-        <div class="sidemenudiv" :class="{ visible: menuVisible }">
-            <div class="floating-widget" @click="toggleMenu">
+        <div id="sidemenudiv" class="sidemenudiv" :class="{ visible: menuVisible }">
+            <div class="floating-widget" :class="{ hidden: !showButton }" @click="toggleMenu">
                 <img :src="arrowicon" alt="close arrow" />
             </div>
             <div class="sidemenu">
@@ -162,7 +168,7 @@ h1 {
     border-color: var(--brownish);
     border-top-left-radius: 50px;
     border-bottom-left-radius: 50px;
-    background-color: var(--dark-gray-pink);
+    background-color: var(--off-black);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -171,6 +177,12 @@ h1 {
     z-index: 9999;
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    opacity: 1;
+}
+
+.floating-widget.hidden {
+    opacity: 0;
+    pointer-events: none;
 }
 
 h1 {
