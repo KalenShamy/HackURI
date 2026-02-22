@@ -815,7 +815,7 @@ function toggleSettings(): void {
 details {
     border: 1px solid #aaaaaa;
     padding: 0.5em 0.5em 0;
-    background-color: #ffebba;
+    background-color: #ffc739;
     color: black;
     width: 90%;
     border-radius: 10px;
