@@ -1,67 +1,67 @@
 <script setup lang="ts">
-import { onMounted, ref, computed, Ref } from 'vue'
+import { onMounted, onUnmounted, ref, computed } from 'vue'
 import PriorityTask from './PriorityTask.vue'
 import OtherTask from './OtherTask.vue'
 
-type Task = {
+type SidePanelTask = {
     id: string
     taskTitle: string
     taskText: string
-    teamName: string
     types: string[]
     status: string
     priority: string
-    isImportantTask?: boolean
 }
 
 const menuVisible = ref(false)
 const hoveringInvisBox = ref(false)
+const teamName = ref('')
+const allTasks = ref<SidePanelTask[]>([])
 
-const teamName = ref('[Insert Team]')
+const priorityTask = computed(() => allTasks.value[0] ?? null)
+const otherTasks = computed(() => allTasks.value.slice(1))
 
-const priorityTask: Ref<Task> = ref({
-    id: 'f1t3',
-    taskTitle: 'Task #3',
-    taskText: 'Something small enough to escape casual notice.',
-    teamName: teamName.value,
-    types: ['documentation'],
-    status: 'review',
-    priority: 'high'
-})
+async function loadWorkspaceById(workspaceId: string): Promise<void> {
+    try {
+        const workspaces = await window.electron.ipcRenderer.invoke('fetch-workspaces')
+        const workspace = workspaces.find((w) => w.id === workspaceId) ?? workspaces[0]
+        if (!workspace) return
+        teamName.value = workspace.name
 
-const otherTasks: Ref<Task[]> = ref([
-    {
-        id: 'f1t1',
-        taskTitle: 'Task #1',
-        taskText: 'Something small enough to escape casual notice.',
-        teamName: teamName.value,
-        types: ['bug'],
-        status: 'todo',
-        priority: 'low',
-        isImportantTask: true
-    },
-    {
-        id: 'f1t2',
-        taskTitle: 'Task #2',
-        taskText: 'Something small enough to escape casual notice.',
-        teamName: teamName.value,
-        types: ['enhancement'],
-        status: 'in progress',
-        priority: 'medium'
-    },
-    {
-        id: 'f2t1',
-        taskTitle: 'Task #1',
-        taskText: 'Something small enough to escape casual notice.',
-        teamName: teamName.value,
-        types: ['proposal'],
-        status: 'blocked',
-        priority: 'medium'
+        const features = await window.electron.ipcRenderer.invoke('fetchFeatures', workspace.id)
+        const primaryFeature = features[0]
+        if (!primaryFeature) {
+            allTasks.value = []
+            return
+        }
+
+        const tasks = await window.electron.ipcRenderer.invoke('fetchTasks', {
+            feature: primaryFeature.id
+        })
+
+        allTasks.value = tasks.map((t) => ({
+            id: t.id,
+            taskTitle: t.title,
+            taskText: t.description,
+            types: [],
+            status: t.status === 'in_progress' ? 'in progress' : t.status,
+            priority: t.priority
+        }))
+    } catch (e) {
+        console.error('SidePanel: failed to load workspace', e)
     }
-])
+}
 
-onMounted(() => {
+let removeWorkspaceChangedListener: (() => void) | null = null
+
+onMounted(async () => {
     const sideMenu = document.getElementById('sidemenudiv')!
+
+    removeWorkspaceChangedListener = window.electron.ipcRenderer.on(
+        'workspace-changed',
+        (_, workspaceId: string) => {
+            loadWorkspaceById(workspaceId)
+        }
+    )
 
     window.addEventListener('mousemove', (e) => {
         const children = sideMenu.getElementsByTagName('*')
@@ -86,6 +86,18 @@ onMounted(() => {
         hoveringInvisBox.value = false
         window.electron.ipcRenderer.send('set-ignore-mouse', true)
     })
+
+    const [workspaces, savedId] = await Promise.all([
+        window.electron.ipcRenderer.invoke('fetch-workspaces'),
+        window.electron.ipcRenderer.invoke('get-active-workspace-id')
+    ])
+    if (!workspaces.length) return
+    const initial = workspaces.find((w: { id: string }) => w.id === savedId) ?? workspaces[0]
+    await loadWorkspaceById(initial.id)
+})
+
+onUnmounted(() => {
+    removeWorkspaceChangedListener?.()
 })
 
 const arrowicon = computed(() => (menuVisible.value ? '/arrow_forward.svg' : '/arrow_back.svg'))
@@ -93,6 +105,10 @@ const showButton = computed(() => menuVisible.value || hoveringInvisBox.value)
 
 function toggleMenu(): void {
     menuVisible.value = !menuVisible.value
+}
+
+function openMainWindow(): void {
+    window.electron.ipcRenderer.send('open-main-window')
 }
 </script>
 
@@ -104,24 +120,34 @@ function toggleMenu(): void {
                 <img :src="arrowicon" alt="close arrow" />
             </div>
             <div class="sidemenu">
+                <div class="panel-header">
+                    <div class="iconbutton" @click="openMainWindow">
+                        <img src="/home.svg" />
+                    </div>
+                    {{ teamName || 'Workspace' }}'s Assigned Tasks
+                    <div class="iconbutton">
+                        <img src="/filter.svg" />
+                    </div>
+                </div>
                 <PriorityTask
+                    v-if="priorityTask"
                     :task-title="priorityTask.taskTitle"
                     :task-text="priorityTask.taskText"
-                    :team-name="priorityTask.teamName"
                     :types="priorityTask.types"
                     :status="priorityTask.status"
                     :priority="priorityTask.priority"
                 />
+                <div v-else class="no-tasks">No tasks for this feature yet.</div>
                 <OtherTask
-                    v-for="task in otherTasks"
+                    v-for="(task, i) in otherTasks"
                     :key="task.id"
                     :task-title="task.taskTitle"
                     :task-text="task.taskText"
-                    :team-name="task.teamName"
+                    :team-name="teamName"
                     :types="task.types"
                     :status="task.status"
                     :priority="task.priority"
-                    :is-important-task="task.isImportantTask ?? false"
+                    :is-important-task="i === 0"
                 />
             </div>
         </div>
@@ -236,5 +262,53 @@ h1 {
 }
 .sidemenu::-webkit-scrollbar {
     display: none;
+}
+
+.panel-header {
+    font-weight: bold;
+    width: 90%;
+    min-height: 40px;
+    background-color: #ffebba;
+    margin: 20px auto 0;
+    color: black;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    border-radius: 15px;
+    flex-wrap: wrap;
+    word-break: break-word;
+    padding: 8px;
+    gap: 5px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+.iconbutton {
+    background-color: #25211f;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    pointer-events: auto;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+}
+
+.iconbutton img {
+    width: 18px;
+    height: 18px;
+}
+
+.no-tasks {
+    margin: 20px;
+    padding: 16px;
+    background-color: #ffebba;
+    border-radius: 15px;
+    text-align: center;
+    color: #8a7540;
+    font-size: 14px;
 }
 </style>

@@ -1,7 +1,12 @@
 <script setup lang="ts">
+import type { Task } from './types'
+import { statusColor, priorityColor } from './types'
+
 defineProps<{
     teamName: string
     teamMembers: string[]
+    primaryFeatureName: string
+    primaryFeatureTasks: Task[]
 }>()
 </script>
 
@@ -18,10 +23,23 @@ defineProps<{
             <img src="/hexagon.svg" alt="icon" />
         </div>
     </div>
-    <div class="menu-box-split">
-        <div class="item-box">Undo last task</div>
-        <div class="item-box">Past tasks</div>
-        <!-- <div class="item-box">Placeholder idk</div> -->
+    <div class="menu-box-split tasks-split">
+        <div class="tasks-header">{{ primaryFeatureName || 'Top Feature' }}</div>
+        <div v-if="primaryFeatureTasks.length" class="tasks-list">
+            <div v-for="task in primaryFeatureTasks" :key="task.id" class="task-item">
+                <span class="task-name">{{ task.name }}</span>
+                <span class="task-status" :style="{ backgroundColor: statusColor(task.status) }">
+                    {{ task.status }}
+                </span>
+                <span
+                    class="task-priority"
+                    :style="{ backgroundColor: priorityColor(task.priority) }"
+                >
+                    {{ task.priority }}
+                </span>
+            </div>
+        </div>
+        <div v-else class="tasks-empty">No tasks yet</div>
     </div>
 </template>
 
@@ -86,18 +104,83 @@ defineProps<{
     flex-shrink: 0;
 }
 
-.item-box {
-    display: flex;
-    align-self: center;
+.tasks-split {
+    overflow-y: auto;
+    justify-content: flex-start;
+    padding: 12px 0;
+    scrollbar-width: none;
+}
+
+.tasks-split::-webkit-scrollbar {
+    display: none;
+}
+
+.tasks-header {
     width: 80%;
-    height: 20%;
-    border-radius: 15px;
-    background-color: #ffebba;
-    justify-content: center;
+    font-size: 13px;
+    font-weight: bold;
+    color: #5a4a1e;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #c8a84b;
+    flex-shrink: 0;
+}
+
+.tasks-list {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.tasks-list::-webkit-scrollbar {
+    display: none;
+}
+
+.task-item {
+    display: flex;
     align-items: center;
-    color: black;
+    gap: 6px;
+    padding: 6px 10px;
+    background-color: #ffebba;
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+.task-name {
+    flex: 1;
+    color: #3a2e0f;
+    font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.task-status {
+    font-size: 10px;
+    font-weight: bold;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 8px;
+    text-transform: capitalize;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.task-priority {
+    font-size: 10px;
+    font-weight: bold;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.tasks-empty {
+    font-size: 13px;
+    color: #8a7540;
 }
 </style>

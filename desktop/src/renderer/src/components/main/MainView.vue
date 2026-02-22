@@ -46,6 +46,8 @@ async function loadWorkspace(workspace: {
     teamName.value = workspace.name
     teamMembers.value = workspace.members.map((m) => m.username)
 
+    window.electron.ipcRenderer.send('workspace-changed', workspace.id)
+
     const [apiFeatures, apiTasks] = await Promise.all([
         window.electron.ipcRenderer.invoke('fetchFeatures', workspace.id),
         window.electron.ipcRenderer.invoke('fetchTasks', { workspace: workspace.id })
@@ -76,12 +78,16 @@ onMounted(async () => {
     loading.value = true
     loadError.value = null
     try {
-        const workspaces = await window.electron.ipcRenderer.invoke('fetch-workspaces')
+        const [workspaces, savedId] = await Promise.all([
+            window.electron.ipcRenderer.invoke('fetch-workspaces'),
+            window.electron.ipcRenderer.invoke('get-active-workspace-id')
+        ])
         if (!workspaces.length) {
             hasNoWorkspaces.value = true
             return
         }
-        await loadWorkspace(workspaces[0])
+        const initial = workspaces.find((w: { id: string }) => w.id === savedId) ?? workspaces[0]
+        await loadWorkspace(initial)
     } catch (e) {
         loadError.value = e instanceof Error ? e.message : 'Failed to load workspace data'
     } finally {
@@ -400,7 +406,12 @@ function handleRemoveFromFeature(): void {
 
                 <!-- Right panel -->
                 <div class="menu-box">
-                    <TeamPanel :team-name="teamName" :team-members="teamMembers" />
+                    <TeamPanel
+                        :team-name="teamName"
+                        :team-members="teamMembers"
+                        :primary-feature-name="features[0]?.name ?? ''"
+                        :primary-feature-tasks="features[0]?.tasks ?? []"
+                    />
                 </div>
             </div>
         </div>

@@ -189,7 +189,8 @@ export const emptyData: Data = {
     user: null,
     token: null,
     github_token: null,
-    workspaces: []
+    workspaces: [],
+    activeWorkspaceId: null
 }
 
 export interface Options {
@@ -203,6 +204,7 @@ export interface Data {
     token: string | null
     github_token: string | null
     workspaces: string[]
+    activeWorkspaceId: string | null
 }
 
 export interface User {

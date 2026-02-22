@@ -2,7 +2,6 @@
 const props = defineProps<{
     taskTitle: string
     taskText: string
-    teamName: string
     types: string[]
     status: string
     priority: string
@@ -36,22 +35,10 @@ function statusColor(status: string): string {
     }
 }
 
-function switchscreen(): void {
-    window.electron.ipcRenderer.send('open-main-window')
-}
+
 </script>
 
 <template>
-    <div class="team-features">
-        <div class="iconbutton" @click="switchscreen">
-            <img src="/home.svg" />
-        </div>
-        {{ teamName }}'s Assigned Tasks
-        <div class="iconbutton">
-            <img src="/filter.svg" />
-        </div>
-    </div>
-
     <div class="background-prio-tasks">
         <div class="foreground-prio-title">
             {{ taskTitle }}

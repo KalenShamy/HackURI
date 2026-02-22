@@ -283,6 +283,11 @@ if (!gotTheLock) {
 app.whenReady().then(() => {
     // Set app user model id for windows
     if (process.platform === 'win32') app.setAppUserModelId('com.hivemind.app')
+    // Ensure the app icon is visible in the Dock (macOS) / taskbar
+    if (process.platform === 'darwin') {
+        app.dock?.show()
+        app.dock?.setIcon(icon)
+    }
 
     // Default open or close DevTools by F12 in development
     // and ignore CommandOrControl + R in production.
@@ -321,6 +326,15 @@ app.whenReady().then(() => {
             sidePanelWindow.setIgnoreMouseEvents(ignore, { forward: true })
         }
     })
+
+    ipcMain.on('workspace-changed', (_, workspaceId: string) => {
+        store.set('activeWorkspaceId', workspaceId)
+        if (sidePanelWindow && !sidePanelWindow.isDestroyed()) {
+            sidePanelWindow.webContents.send('workspace-changed', workspaceId)
+        }
+    })
+
+    ipcMain.handle('get-active-workspace-id', () => store.get('activeWorkspaceId'))
 
     ipcMain.handle('fetch-workspaces', async () => {
         try {
