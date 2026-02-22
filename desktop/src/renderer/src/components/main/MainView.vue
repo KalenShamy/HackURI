@@ -375,17 +375,37 @@ function priorityColor(priority: string): string {
                         </div>
                     </template>
                 </div>
-
-                <!-- Right panel: people / actions -->
-                <div id="trans" class="menu-box">
+                <div class="menu-box">
                     <div class="menu-box-split">
                         <div id="people" class="people-box">
-                            <img src="/star.svg" />
+                            <img src="/hexagon.svg" alt="icon" />
+                            {{}}
                         </div>
-                        <div id="people" class="people-box">Hai-bien Nguyen</div>
-                        <div class="people-box">Hannah Ritchie</div>
-                        <div class="people-box">Paul Fang Li</div>
-                        <div class="people-box">Kaylen Shamey</div>
+                        <div class="people-box">
+                            <img src="/hexagon.svg" alt="icon" />
+                            Hai-bien Nguyen
+                            <img src="/hexagon.svg" alt="icon" />
+                        </div>
+                        <div class="people-box">
+                            <img src="/hexagon.svg" alt="icon" />
+                            Hannah Ritchie
+                            <img src="/hexagon.svg" alt="icon" />
+                        </div>
+                        <div class="people-box">
+                            <img src="/hexagon.svg" alt="icon" />
+                            Paul Fang Li
+                            <img src="/hexagon.svg" alt="icon" />
+                        </div>
+                        <div class="people-box">
+                            <img src="/hexagon.svg" alt="icon" />
+                            Kaylen Shamey
+                            <img src="/hexagon.svg" alt="icon" />
+                        </div>
+                        <div class="people-box">
+                            <img src="/hexagon.svg" alt="icon" />
+                            Joe Schmoe
+                            <img src="/hexagon.svg" alt="icon" />
+                        </div>
                     </div>
                     <div class="menu-box-split">
                         <div class="item-box">Undo last task</div>
@@ -465,7 +485,7 @@ main {
 
 .menu-box-split {
     height: 45%;
-    width: 90%;
+    width: 100%;
     background-color: #e9c17d;
     border-radius: 15px;
     display: flex;
@@ -478,6 +498,7 @@ main {
     display: flex;
     flex-direction: column;
     margin-bottom: 20px;
+    margin-top: 10px;
     align-items: center;
 }
 #task-label .box-label {
@@ -507,7 +528,7 @@ main {
     align-items: center;
     justify-content: center;
     background-color: #ffebba;
-    border-radius: 40px;
+    border-radius: 15px;
     width: 65%;
     height: 50px;
     margin: 10px;
@@ -849,8 +870,8 @@ main {
 }
 .people-box {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: space-between;
     width: 80%;
     height: 10%;
     border-radius: 10px;
@@ -859,8 +880,24 @@ main {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+.people-box img {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
 }
 #people {
-    margin-top: 28px;
+    width: 60%;
+    height: 20%;
+    border-radius: 10px;
+    background-color: #ffc739;
+    color: black;
+    align-items: left;
+    display: flex;
+    font-size: 35px;
+    align-items: center;
 }
 </style>
