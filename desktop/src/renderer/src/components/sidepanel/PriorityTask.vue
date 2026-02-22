@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 const props = defineProps<{
     taskTitle: string
     taskText: string
@@ -47,14 +46,14 @@ function switchscreen(): void {
 <style scoped>
 .foreground-text {
     width: 95%;
-    height: 105px;
     background-color: #fff4e0;
     border-radius: 15px;
     text-align: left;
-
+    padding: 5px;
     max-height: 200px;
     overflow-y: auto;
     color: #4d3c35;
+    min-height: 80px;
 }
 .foreground-prio-title {
     width: 90%;
@@ -100,14 +99,17 @@ function switchscreen(): void {
     height: 18px;
 }
 .foreground-prio-tasks {
-    margin-top: 5px;
+    margin-top: 15px;
     width: 90%;
-    height: 120px;
-    background-color: #f3bb5b;
+    background-color: #fff4e0;
     border-radius: 15px;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    padding: 10px 0;
+    max-height: 200px;
+    overflow-y: auto;
+    color: #4d3c35;
 }
 .buttonbox {
     display: flex;

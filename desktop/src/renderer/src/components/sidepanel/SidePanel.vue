@@ -16,7 +16,8 @@ const priorityTask: Ref<Task> = ref({
     typeOfTask: true,
     isImportantTask: false,
     taskTitle: 'Important Task',
-    taskText: '[text task]',
+    taskText:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt uLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt u',
     teamName: '[TeamjijecfcmewifjfcewfefcmcewfceFwrfmnoicWRF NOUwrf grmnoiwfdmnoi Name]'
 })
 const otherTask: Ref<Task[]> = ref([
