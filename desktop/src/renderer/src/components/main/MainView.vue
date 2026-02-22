@@ -12,11 +12,21 @@
                         <div class="toolbar-boxes">Remove</div>
                     </div>
                     <div id="task-label">
-                        <div class="box-label">Feature #1</div>
-                        <div class="box-label">Feature #2</div>
-                        <div class="box-label">Feature #3</div>
-                        <div class="box-label">Feature #4</div>
-                        <div class="box-label">Feature #5</div>
+                        <details>
+                            <summary>Feature #1</summary>
+                            <details>
+                                <summary>Task #1</summary>
+                                <p>Something small enough to escape casual notice.</p>
+                            </details>
+                            <details>
+                                <summary>Task #2</summary>
+                                <p>Something small enough to escape casual notice.</p>
+                            </details>
+                            <details>
+                                <summary>Task #3</summary>
+                                <p>Something small enough to escape casual notice.</p>
+                            </details>
+                        </details>
                     </div>
                 </div>
                 <div class="menu-box">
@@ -43,6 +53,29 @@
 </template>
 
 <style scoped>
+details {
+    border: 1px solid #aaaaaa;
+    border-radius: 4px;
+    padding: 0.5em 0.5em 0;
+    background-color: #ffebba;
+    color: black;
+    width: 90%;
+}
+
+summary {
+    font-weight: bold;
+    margin: -0.5em -0.5em 0;
+    padding: 0.5em;
+}
+
+details[open] {
+    padding: 0.5em;
+}
+
+details[open] summary {
+    border-bottom: 1px solid #aaaaaa;
+    margin-bottom: 0.5em;
+}
 main {
     background: var(--background-color);
 }
