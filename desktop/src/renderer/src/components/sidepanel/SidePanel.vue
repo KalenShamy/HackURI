@@ -2,43 +2,64 @@
 import { onMounted, ref, computed, Ref } from 'vue'
 import PriorityTask from './PriorityTask.vue'
 import OtherTask from './OtherTask.vue'
+
 type Task = {
-    typeOfTask?: boolean
-    isImportantTask?: boolean
+    id: string
     taskTitle: string
     taskText: string
     teamName: string
+    types: string[]
+    status: string
+    priority: string
+    isImportantTask?: boolean
 }
 
 const menuVisible = ref(false)
 const hoveringInvisBox = ref(false)
+
+const teamName = ref('[Insert Team]')
+
 const priorityTask: Ref<Task> = ref({
-    typeOfTask: true,
-    isImportantTask: false,
-    taskTitle: 'Important Task',
-    taskText:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt uLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt u',
-    teamName: '[TeamjijecfcmewifjfcewfefcmcewfceFwrfmnoicWRF NOUwrf grmnoiwfdmnoi Name]'
+    id: 'f1t3',
+    taskTitle: 'Task #3',
+    taskText: 'Something small enough to escape casual notice.',
+    teamName: teamName.value,
+    types: ['documentation'],
+    status: 'review',
+    priority: 'high'
 })
-const otherTask: Ref<Task[]> = ref([
+
+const otherTasks: Ref<Task[]> = ref([
     {
-        taskTitle: 'Task1',
-        taskText:
-            '"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."',
-        teamName: '[Team Name]',
+        id: 'f1t1',
+        taskTitle: 'Task #1',
+        taskText: 'Something small enough to escape casual notice.',
+        teamName: teamName.value,
+        types: ['bug'],
+        status: 'todo',
+        priority: 'low',
         isImportantTask: true
     },
     {
-        taskTitle: 'Task2',
-        taskText: '[text task]',
-        teamName: '[Team Name]'
+        id: 'f1t2',
+        taskTitle: 'Task #2',
+        taskText: 'Something small enough to escape casual notice.',
+        teamName: teamName.value,
+        types: ['enhancement'],
+        status: 'in progress',
+        priority: 'medium'
     },
     {
-        taskTitle: 'Task3',
-        taskText: '[text task]',
-        teamName: '[Team Name]'
+        id: 'f2t1',
+        taskTitle: 'Task #1',
+        taskText: 'Something small enough to escape casual notice.',
+        teamName: teamName.value,
+        types: ['proposal'],
+        status: 'blocked',
+        priority: 'medium'
     }
 ])
+
 onMounted(() => {
     const sideMenu = document.getElementById('sidemenudiv')!
 
@@ -66,8 +87,10 @@ onMounted(() => {
         window.electron.ipcRenderer.send('set-ignore-mouse', true)
     })
 })
+
 const arrowicon = computed(() => (menuVisible.value ? '/arrow_forward.svg' : '/arrow_back.svg'))
 const showButton = computed(() => menuVisible.value || hoveringInvisBox.value)
+
 function toggleMenu(): void {
     menuVisible.value = !menuVisible.value
 }
@@ -85,13 +108,19 @@ function toggleMenu(): void {
                     :task-title="priorityTask.taskTitle"
                     :task-text="priorityTask.taskText"
                     :team-name="priorityTask.teamName"
+                    :types="priorityTask.types"
+                    :status="priorityTask.status"
+                    :priority="priorityTask.priority"
                 />
                 <OtherTask
-                    v-for="task in otherTask"
-                    :key="task.taskTitle"
+                    v-for="task in otherTasks"
+                    :key="task.id"
                     :task-title="task.taskTitle"
                     :task-text="task.taskText"
                     :team-name="task.teamName"
+                    :types="task.types"
+                    :status="task.status"
+                    :priority="task.priority"
                     :is-important-task="task.isImportantTask ?? false"
                 />
             </div>

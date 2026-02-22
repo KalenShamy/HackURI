@@ -5,10 +5,41 @@ defineProps<{
     taskTitle: string
     taskText: string
     teamName: string
+    types: string[]
+    status: string
+    priority: string
     isImportantTask: boolean
 }>()
 
 const isExpanded = ref(false)
+
+function priorityColor(priority: string): string {
+    switch (priority) {
+        case 'high':
+            return '#d9534f'
+        case 'medium':
+            return '#f0ad4e'
+        case 'low':
+            return '#5cb85c'
+        default:
+            return '#999'
+    }
+}
+
+function statusColor(status: string): string {
+    switch (status) {
+        case 'todo':
+            return '#6c757d'
+        case 'in progress':
+            return '#0d6efd'
+        case 'review':
+            return '#6f42c1'
+        case 'blocked':
+            return '#d9534f'
+        default:
+            return '#999'
+    }
+}
 
 function toggleExpand(): void {
     isExpanded.value = !isExpanded.value
@@ -33,6 +64,12 @@ function toggleExpand(): void {
                     <span class="task-title">
                         <img src="/hexagon.svg" alt="task icon" />{{ taskTitle }}
                     </span>
+                    <span
+                        class="priority-badge"
+                        :style="{ backgroundColor: priorityColor(priority) }"
+                    >
+                        {{ priority }}
+                    </span>
                 </div>
                 <div class="iconbutton toggle-btn" @click="toggleExpand">
                     <span v-if="isExpanded" style="color: white">▲</span>
@@ -43,6 +80,16 @@ function toggleExpand(): void {
             <!-- Collapsible details -->
             <div class="task-body-wrapper" :class="{ expanded: isExpanded }">
                 <div class="task-body">
+                    <!-- Tags row -->
+                    <div class="tag-row">
+                        <span v-for="t in types" :key="t" class="type-tag">
+                            {{ t }}
+                        </span>
+                        <span v-if="!types.length" class="type-tag type-tag-empty"> none </span>
+                        <span class="status-tag" :style="{ backgroundColor: statusColor(status) }">
+                            {{ status }}
+                        </span>
+                    </div>
                     <div class="foreground-prio-tasks">
                         <div class="foreground-text">{{ taskText }}</div>
                     </div>
@@ -100,7 +147,8 @@ function toggleExpand(): void {
 .task-title-container {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 .task-title {
     align-items: center;
@@ -108,6 +156,47 @@ function toggleExpand(): void {
     gap: 10px;
     font-size: 1.1em;
     color: #4d3c35;
+}
+.priority-badge {
+    font-size: 10px;
+    font-weight: bold;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+    width: 90%;
+    margin-top: 8px;
+    margin-bottom: 4px;
+}
+.type-tag {
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background-color: #d4a030;
+    color: white;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+.type-tag-empty {
+    background-color: #bbb;
+}
+.status-tag {
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 10px;
+    color: white;
+    text-transform: capitalize;
+    white-space: nowrap;
 }
 .task-body-wrapper {
     display: grid;
@@ -147,7 +236,7 @@ function toggleExpand(): void {
     margin-right: 5px;
 }
 .foreground-prio-tasks {
-    margin-top: 15px;
+    margin-top: 8px;
     width: 90%;
     background-color: #fff4e0;
     border-radius: 15px;

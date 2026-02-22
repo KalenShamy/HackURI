@@ -107,10 +107,10 @@ export function createMainWindow(): void {
 
     // Create the browser window.
     const mainWindow = new BrowserWindow({
-        x: x + Math.floor((width - 800) / 2),
-        y: y + Math.floor((height - 600) / 2),
-        width: 800,
-        height: 600,
+        x: x + Math.floor((width - 950) / 2),
+        y: y + Math.floor((height - 650) / 2),
+        width: 950,
+        height: 650,
         transparent: false,
         frame: true, // no title bar, close/minimize/etc controls
         icon: icon,
