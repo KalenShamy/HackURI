@@ -71,7 +71,6 @@ summary {
 details[open] {
     padding: 0.5em;
 }
-
 details[open] summary {
     border-bottom: 1px solid #aaaaaa;
     margin-bottom: 0.5em;
@@ -102,7 +101,7 @@ main {
     width: 33%;
     background-color: #e9c17d;
     border-radius: 40px;
-    margin: 20px;
+    margin: 0.8%;
     display: flex;
     flex-direction: column;
 }
@@ -151,6 +150,9 @@ main {
     margin: 10px;
     box-sizing: border-box;
     color: black;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .menu-title {
     position: absolute;
@@ -162,7 +164,10 @@ main {
     background-color: #f3bb5b;
     border-radius: 40px;
     margin: 20px;
-    font-size: 45px;
+    font-size: 40px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #desc-box {
@@ -180,13 +185,15 @@ main {
     height: 20%;
     border-radius: 15px;
     background-color: #ffebba;
-    margin-left: 40px;
-    margin-top: 30px;
-    margin-bottom: 30px;
+    margin-left: 11%;
+    margin-top: 8%;
+    margin-bottom: 8%;
     justify-content: center;
     align-items: center;
-    font-size: 24px;
     color: black;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .people-box {
     display: flex;
@@ -200,8 +207,10 @@ main {
     margin-bottom: 20px;
     justify-content: center;
     align-items: center;
-    font-size: 24px;
     color: black;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #people {
     margin-top: 28px;
