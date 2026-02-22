@@ -103,9 +103,10 @@ function toggleMenu(): void {
     display: flex;
     justify-content: flex-start;
     flex-direction: column;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
     pointer-events: auto;
+    padding-bottom: 20px;
 }
 h1 {
     color: white;

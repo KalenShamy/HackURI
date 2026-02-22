@@ -1,72 +1,129 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-const props = defineProps<{
+import { ref } from 'vue'
+
+defineProps<{
     taskTitle: string
     taskText: string
     teamName: string
     isImportantTask: boolean
 }>()
-</script>
-<template>
-    <!-- menu, put all divs in here -->
-    <div v-if="isImportantTask" class="team-features">
-        Other tasks
-        <div class="iconbutton" @click="">
-            <img src="/filter.svg" />
-        </div>
-    </div>
 
-    <!-- team features first div -->
-    <div class="background-prio-tasks">
-        <div class="foreground-prio-tasks">
-            <div class="foreground-text">{{ taskText }}</div>
+const isExpanded = ref(false)
+
+function toggleExpand(): void {
+    isExpanded.value = !isExpanded.value
+}
+</script>
+
+<template>
+    <div class="other-task-root">
+        <!-- "Other tasks" header only on first important task -->
+        <div v-if="isImportantTask" class="team-features">
+            Other tasks
+            <div class="iconbutton">
+                <img src="/filter.svg" />
+            </div>
         </div>
-        <div class="buttonbox">
-            <div class="icontextbutton" @click="">
-                Finish
-                <img src="/star.svg" />
+
+        <!-- Task card -->
+        <div class="background-prio-tasks">
+            <!-- Always visible header -->
+            <div class="task-header">
+                <div class="task-title-container">
+                    <span class="task-title">{{ taskTitle }}</span>
+                </div>
+                <div class="iconbutton toggle-btn" @click="toggleExpand">
+                    <span v-if="isExpanded" style="color: white">▲</span>
+                    <span v-else style="color: white">▼</span>
+                </div>
             </div>
-            <div class="icontextbutton" @click="">
-                Drop
-                <img src="/checkmark.svg" />
-            </div>
-            <div class="icontextbutton" @click="">
-                Deadline
-                <img src="/clock.svg" />
+
+            <!-- Collapsible details -->
+            <div class="task-body-wrapper" :class="{ expanded: isExpanded }">
+                <div class="task-body">
+                    <div class="foreground-prio-tasks">
+                        <div class="foreground-text">{{ taskText }}</div>
+                    </div>
+                    <div class="buttonbox">
+                        <div class="icontextbutton">
+                            Prioritize
+                            <img src="/star.svg" />
+                        </div>
+                        <div class="icontextbutton">
+                            Drop
+                            <img src="/checkmark.svg" />
+                        </div>
+                        <div class="icontextbutton">
+                            Deadline
+                            <img src="/clock.svg" />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+.other-task-root {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
 .foreground-text {
     width: 95%;
-    height: 105px;
     background-color: #fff4e0;
     border-radius: 15px;
     text-align: center;
-    margin-top: 5px;
-}
-.foreground-prio-title {
-    width: 90%;
-    height: 20px;
-    background-color: #f3bb5b;
-    border-radius: 15px;
-    text-align: center;
-    margin: 15px;
-    color: black;
+    padding: 10px;
 }
 .background-prio-tasks {
     margin-top: 15px;
     display: flex;
     width: 90%;
-    height: 200px;
-    border-radius: 50px;
-    background-color: #ffebba;
+    padding: 10px 0;
+    background-color: #f3bb5b;
     border-radius: 15px;
     align-self: center;
     align-items: center;
     flex-direction: column;
+}
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+}
+.task-title-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.task-title {
+    font-size: 1.1em;
+    text-decoration: underline;
+    color: #4d3c35;
+}
+.task-body-wrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease;
+    width: 100%;
+    overflow: hidden;
+}
+.task-body-wrapper.expanded {
+    grid-template-rows: 1fr;
+}
+.task-body {
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.toggle-btn {
+    background-color: #25211f;
 }
 .iconbutton {
     background-color: #25211f;
@@ -88,12 +145,12 @@ const props = defineProps<{
 .foreground-prio-tasks {
     margin-top: 15px;
     width: 90%;
-    height: 120px;
-    background-color: #f3bb5b;
+    background-color: #fff4e0;
     border-radius: 15px;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 10px 0;
 }
 .buttonbox {
     display: flex;
@@ -101,13 +158,12 @@ const props = defineProps<{
     text-align: center;
     align-items: center;
     border-radius: 15px;
-    align-content: center;
-    justify-content: center;
-    display: flex;
     margin-top: 10px;
+    margin-bottom: 5px;
+    flex-wrap: wrap;
 }
 .icontextbutton {
-    background-color: #f3bb5b;
+    background-color: #fff4e0;
     border-radius: 10px;
     display: flex;
     justify-content: center;
@@ -118,29 +174,28 @@ const props = defineProps<{
     border-width: 0px;
     border-style: solid;
     border-right: none;
-    margin-left: 5px;
     color: #4d3c35;
     gap: 5px;
     margin: 5px;
     padding-left: 10px;
     padding-right: 10px;
     height: 30px;
-    margin-top: 5px;
+    white-space: nowrap;
 }
 .team-features {
     width: 90%;
     height: 40px;
-    background-color: #ffebba;
-    margin: auto;
+    background-color: #f3bb5b;
     margin-top: 10px;
-    color: black;
+    color: #4d3c35;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    padding: 0 15px;
     text-align: center;
     align-items: center;
     border-radius: 15px;
-    align-content: center;
-    justify-content: center;
-    display: flex;
+    font-size: 1.2em;
+    text-decoration: underline;
+    box-sizing: border-box;
 }
 </style>
