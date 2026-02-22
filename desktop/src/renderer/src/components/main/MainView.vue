@@ -3,7 +3,7 @@
 <template>
     <main>
         <div class="whole-box">
-            <div class="menu-title">[Insert Team]'s Current Workspace</div>
+            <div id="menu-title">[Insert Team]'s Current Workspace</div>
             <div id="trans" class="menu-layout">
                 <div class="menu-box">
                     <div id="toolbar">
@@ -28,6 +28,40 @@
                             </details>
                         </details>
                     </div>
+                    <div id="task-label">
+                        <details>
+                            <summary>Feature #2</summary>
+                            <details>
+                                <summary>Task #1</summary>
+                                <p>Something small enough to escape casual notice.</p>
+                            </details>
+                            <details>
+                                <summary>Task #2</summary>
+                                <p>Something small enough to escape casual notice.</p>
+                            </details>
+                            <details>
+                                <summary>Task #3</summary>
+                                <p>Something small enough to escape casual notice.</p>
+                            </details>
+                        </details>
+                    </div>
+                    <div id="task-label">
+                        <details>
+                            <summary>Feature #3</summary>
+                            <details>
+                                <summary>Task #1</summary>
+                                <p>Something small enough to escape casual notice.</p>
+                            </details>
+                            <details>
+                                <summary>Task #2</summary>
+                                <p>Something small enough to escape casual notice.</p>
+                            </details>
+                            <details>
+                                <summary>Task #3</summary>
+                                <p>Something small enough to escape casual notice.</p>
+                            </details>
+                        </details>
+                    </div>
                 </div>
                 <div class="menu-box">
                     <div id="desc-box"></div>
@@ -35,7 +69,9 @@
                 </div>
                 <div id="trans" class="menu-box">
                     <div class="menu-box-split">
-                        <div id="people" class="people-box">PEOPLE</div>
+                        <div id="people" class="people-box">
+                            <img src="/star.svg" />
+                        </div>
                         <div id="people" class="people-box">Hai-bien Nguyen</div>
                         <div class="people-box">Hannah Ritchie</div>
                         <div class="people-box">Paul Fang Li</div>
@@ -55,11 +91,14 @@
 <style scoped>
 details {
     border: 1px solid #aaaaaa;
-    border-radius: 4px;
     padding: 0.5em 0.5em 0;
     background-color: #ffebba;
     color: black;
     width: 90%;
+}
+
+details > .features {
+    border-radius: 15px;
 }
 
 summary {
@@ -92,18 +131,21 @@ main {
 .menu-layout {
     width: 92.5%;
     height: 80%;
+    min-height: 0;
     border-radius: 15px;
     align-items: center;
     display: flex;
 }
 .menu-box {
     height: 100%;
+    min-height: 0;
     width: 33%;
     background-color: #e9c17d;
     border-radius: 40px;
     margin: 0.8%;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
 }
 
 .menu-box-split {
@@ -116,7 +158,7 @@ main {
 #task-label {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    margin-bottom: 20px;
     align-items: center;
 }
 #task-label .box-label {
@@ -132,12 +174,13 @@ main {
 
 #toolbar {
     background-color: transparent;
-    width: 100%;
-    height: 20%;
+    width: 95%;
+    height: 100px;
     display: flex;
     text-align: center;
     justify-content: center;
     align-items: center;
+    align-self: center;
 }
 #toolbar .toolbar-boxes {
     display: flex;
@@ -145,8 +188,8 @@ main {
     justify-content: center;
     background-color: #ffebba;
     border-radius: 40px;
-    width: 80%;
-    height: 40%;
+    width: 65%;
+    height: 50px;
     margin: 10px;
     box-sizing: border-box;
     color: black;
@@ -154,12 +197,12 @@ main {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.menu-title {
+#menu-title {
     position: absolute;
     text-align: center;
     align-self: flex-start;
     width: 87.5%;
-    height: 10%;
+    height: 55px;
     padding: 25px;
     background-color: #f3bb5b;
     border-radius: 40px;
@@ -176,7 +219,7 @@ main {
     height: 5%;
     border-radius: 15px;
     background-color: #ffebba;
-    margin-top: 50px;
+    margin-top: 10%;
 }
 .item-box {
     display: flex;
@@ -202,9 +245,9 @@ main {
     height: 10%;
     border-radius: 15px;
     background-color: #ffebba;
-    margin-left: 40px;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-left: 10%;
+    margin-top: 6%;
+    margin-bottom: 6%;
     justify-content: center;
     align-items: center;
     color: black;
