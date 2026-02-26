@@ -315,9 +315,10 @@ function handleRemoveFromFeature(): void {
                 <div class="switcher-panel">
                     <div class="switcher-header">
                         <span>Switch Workspace</span>
-                        <button class="switcher-close" @click="showWorkspaceSwitcher = false">
-                            ✕
-                        </button>
+                        <button
+                            class="switcher-close"
+                            @click="showWorkspaceSwitcher = false"
+                        ></button>
                     </div>
                     <div v-if="switcherLoading" class="switcher-loading">Loading…</div>
                     <ul v-else class="switcher-list">
@@ -344,7 +345,12 @@ function handleRemoveFromFeature(): void {
             >
                 <WorkspaceInit
                     :cancelable="true"
-                    @workspace-created="(ws) => { showNewWorkspaceForm = false; onWorkspaceCreated(ws) }"
+                    @workspace-created="
+                        (ws) => {
+                            showNewWorkspaceForm = false
+                            onWorkspaceCreated(ws)
+                        }
+                    "
                     @cancel="showNewWorkspaceForm = false"
                 />
             </div>
