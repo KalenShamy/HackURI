@@ -21,7 +21,7 @@ const emit = defineEmits<{
 }>()
 
 const typeOptions = ['bug', 'enhancement', 'proposal', 'documentation']
-const statusOptions = ['todo', 'in progress', 'review', 'blocked']
+const statusOptions = ['todo', 'in progress', 'done']
 const priorityOptions = ['low', 'medium', 'high']
 
 const form = reactive({

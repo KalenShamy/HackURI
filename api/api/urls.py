@@ -1,14 +1,24 @@
+import os
+
 from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import path, include
 
 from HackAPI.views import desktop_auth_callback
 
-BUILD_VERSION = 'v2-debug-2026-02-22'
+APP_VERSION = os.getenv('APP_VERSION', '0.0.0-dev')
+APP_COMMIT = os.getenv('APP_COMMIT', os.getenv('GITHUB_SHA', 'local'))[:12]
 
 
 def health_check(request):
-    return JsonResponse({'status': 'ok', 'build': BUILD_VERSION})
+    return JsonResponse(
+        {
+            'status': 'ok',
+            'build': f'{APP_VERSION}+{APP_COMMIT}',
+            'version': APP_VERSION,
+            'commit': APP_COMMIT,
+        }
+    )
 
 
 urlpatterns = [

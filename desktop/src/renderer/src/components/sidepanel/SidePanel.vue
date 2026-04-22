@@ -52,6 +52,23 @@ async function loadWorkspaceById(workspaceId: string): Promise<void> {
 }
 
 let removeWorkspaceChangedListener: (() => void) | null = null
+let removeMouseMoveListener: (() => void) | null = null
+let removeMouseLeaveListener: (() => void) | null = null
+let pendingPointerEvent: MouseEvent | null = null
+let pendingFrame: number | null = null
+let ignoreMouse: boolean | null = null
+
+function syncHoveringState(hovering: boolean): void {
+    if (hoveringInvisBox.value !== hovering) {
+        hoveringInvisBox.value = hovering
+    }
+
+    const nextIgnoreMouse = !hovering
+    if (ignoreMouse !== nextIgnoreMouse) {
+        ignoreMouse = nextIgnoreMouse
+        window.electron.ipcRenderer.send('set-ignore-mouse', nextIgnoreMouse)
+    }
+}
 
 onMounted(async () => {
     const sideMenu = document.getElementById('sidemenudiv')!
@@ -63,29 +80,41 @@ onMounted(async () => {
         }
     )
 
-    window.addEventListener('mousemove', (e) => {
-        const children = sideMenu.getElementsByTagName('*')
-        let hovering = false
-        for (const child of children) {
-            const rect = child.getBoundingClientRect()
-            if (
-                e.clientX >= rect.left &&
-                e.clientX <= rect.right &&
-                e.clientY >= rect.top &&
-                e.clientY <= rect.bottom
-            ) {
-                hovering = true
-                break
-            }
-        }
-        hoveringInvisBox.value = hovering
-        window.electron.ipcRenderer.send('set-ignore-mouse', !hovering)
-    })
+    const flushPointerCheck = (): void => {
+        pendingFrame = null
+        if (!pendingPointerEvent) return
 
-    sideMenu.addEventListener('mouseleave', () => {
-        hoveringInvisBox.value = false
-        window.electron.ipcRenderer.send('set-ignore-mouse', true)
-    })
+        const target = document.elementFromPoint(
+            pendingPointerEvent.clientX,
+            pendingPointerEvent.clientY
+        )
+        const hovering = !!target && (target === sideMenu || sideMenu.contains(target))
+        syncHoveringState(hovering)
+        pendingPointerEvent = null
+    }
+
+    const onMouseMove = (e: MouseEvent): void => {
+        pendingPointerEvent = e
+        if (pendingFrame !== null) return
+        // Coalesce high-frequency mousemove events to one check per frame.
+        pendingFrame = window.requestAnimationFrame(flushPointerCheck)
+    }
+
+    window.addEventListener('mousemove', onMouseMove, { passive: true })
+    removeMouseMoveListener = () => {
+        window.removeEventListener('mousemove', onMouseMove)
+    }
+
+    const onMouseLeave = (): void => {
+        syncHoveringState(false)
+    }
+
+    sideMenu.addEventListener('mouseleave', onMouseLeave)
+    removeMouseLeaveListener = () => {
+        sideMenu.removeEventListener('mouseleave', onMouseLeave)
+    }
+
+    syncHoveringState(false)
 
     const [workspaces, savedId] = await Promise.all([
         window.electron.ipcRenderer.invoke('fetch-workspaces'),
@@ -98,6 +127,14 @@ onMounted(async () => {
 
 onUnmounted(() => {
     removeWorkspaceChangedListener?.()
+    removeMouseMoveListener?.()
+    removeMouseLeaveListener?.()
+
+    if (pendingFrame !== null) {
+        window.cancelAnimationFrame(pendingFrame)
+        pendingFrame = null
+    }
+    pendingPointerEvent = null
 })
 
 const arrowicon = computed(() => (menuVisible.value ? '/arrow_forward.svg' : '/arrow_back.svg'))

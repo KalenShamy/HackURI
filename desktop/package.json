@@ -3,16 +3,16 @@
   "version": "1.0.0",
   "description": "HiveMind",
   "main": "./out/main/index.js",
-  "author": "example.com",
-  "homepage": "https://electron-vite.org",
+  "author": "KalenShamy",
+  "homepage": "https://github.com/KalenShamy/HackURI",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "vue-tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
-    "start": "electron-vite preview",
-    "dev": "electron-vite dev",
+    "start": "node ./scripts/electron-vite-clean.mjs preview",
+    "dev": "node ./scripts/electron-vite-clean.mjs dev",
     "build": "npm run typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
@@ -23,12 +23,7 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
-    "@heroicons/vue": "^2.2.0",
-    "axios": "^1.13.5",
-    "dotenv": "^17.3.1",
-    "electron-updater": "^6.3.9",
-    "pinia": "^3.0.4",
-    "vue-router": "^4.6.4"
+    "dotenv": "^17.3.1"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "3.0.0",

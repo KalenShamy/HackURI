@@ -347,7 +347,6 @@ app.whenReady().then(() => {
             sidePanelWindow.webContents.send('workspace-changed', workspaceId)
         }
     })
-
     ipcMain.handle('get-active-workspace-id', () => store.get('activeWorkspaceId'))
 
     ipcMain.handle('fetch-workspaces', async () => {
@@ -389,6 +388,7 @@ app.whenReady().then(() => {
         async (_, payload: { workspace: string; name: string; description: string }) =>
             await store.createFeature(payload)
     )
+    ipcMain.handle('delete-task', async (_, id: string) => await store.deleteTask(id))
     ipcMain.handle('fetch-github-repos', async () => await store.fetchGitHubRepos())
     ipcMain.handle(
         'create-workspace',

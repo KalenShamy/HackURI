@@ -65,6 +65,6 @@ export function featurePriority(feature: Feature): string {
 
 export function featureProgress(feature: Feature): { done: number; total: number } {
     const total = feature.tasks.length
-    const done = feature.tasks.filter((t) => t.status === 'review' || t.status === 'done').length
+    const done = feature.tasks.filter((t) => t.status === 'done').length
     return { done, total }
 }

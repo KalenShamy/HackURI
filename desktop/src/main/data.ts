@@ -125,6 +125,15 @@ export class Store {
         return res.json() as Promise<Task>
     }
 
+    async deleteTask(id: string): Promise<void> {
+        const token = this.getDecrypted('token')
+        const res = await fetch(`${this.baseUrl}/api/tasks/${id}/`, {
+            method: 'DELETE',
+            headers: { Authorization: `Token ${token}` }
+        })
+        if (!res.ok) throw new Error(`Delete task failed: ${res.status}`)
+    }
+
     async createFeature(payload: {
         workspace: string
         name: string

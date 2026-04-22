@@ -281,10 +281,11 @@ async function handleCreateFeature(payload: {
 }
 
 // --- Remove task from feature ---
-function handleRemoveFromFeature(): void {
+async function handleRemoveFromFeature(): Promise<void> {
     if (!selectedFeatureId.value || !selectedTaskId.value) return
     const feature = features.value.find((f) => f.id === selectedFeatureId.value)
     if (!feature) return
+    await window.electron.ipcRenderer.invoke('delete-task', selectedTaskId.value)
     feature.tasks = feature.tasks.filter((t) => t.id !== selectedTaskId.value)
     selectedTaskId.value = null
     panelMode.value = 'viewingFeature'
