@@ -269,7 +269,7 @@ h1 {
     width: 90%;
     min-height: 40px;
     background-color: #ffebba;
-    margin: 20px auto 0;
+    margin: 20px auto 16px;
     color: black;
     display: flex;
     justify-content: center;
@@ -282,6 +282,7 @@ h1 {
     gap: 5px;
     box-sizing: border-box;
     flex-shrink: 0;
+    padding-bottom: 10px;
 }
 
 .iconbutton {
@@ -292,9 +293,11 @@ h1 {
     align-items: center;
     cursor: pointer;
     pointer-events: auto;
-    width: 22px;
-    height: 22px;
+    width: 25px;
+    height: 25px;
     flex-shrink: 0;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .iconbutton img {

@@ -42,15 +42,21 @@ export function createSidePanel(): void {
         width: 400,
         height: 800,
         transparent: true,
-        frame: true, // no title bar, close/minimize/etc controls
+        frame: false,
         icon: icon,
         alwaysOnTop: true,
-        skipTaskbar: false,
+        skipTaskbar: true,
+        resizable: false,
+        movable: false,
+        hasShadow: false,
+        autoHideMenuBar: true,
         webPreferences: {
             preload: join(__dirname, '../preload/index.js'),
             sandbox: false
         }
     })
+
+    mainWindow.setMenu(null)
 
     mainWindow.on('ready-to-show', () => {
         mainWindow.show()
@@ -117,8 +123,12 @@ function stopDisplayTracking(): void {
 export function createMainWindow(): void {
     if (!isSetupDone()) return
     if (sidePanelWindow && !sidePanelWindow.isDestroyed()) {
-        sidePanelWindow.close()
+        const panelToClose = sidePanelWindow
         sidePanelWindow = null
+        stopDisplayTracking()
+        setImmediate(() => {
+            if (!panelToClose.isDestroyed()) panelToClose.destroy()
+        })
     }
     const activeDisplay = getActiveDisplay()
     const { x, y, width, height } = activeDisplay.workArea
