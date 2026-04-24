@@ -84,11 +84,28 @@ onMounted(async () => {
         pendingFrame = null
         if (!pendingPointerEvent) return
 
-        const target = document.elementFromPoint(
-            pendingPointerEvent.clientX,
-            pendingPointerEvent.clientY
-        )
-        const hovering = !!target && (target === sideMenu || sideMenu.contains(target))
+        const clientX = pendingPointerEvent.clientX
+        const clientY = pendingPointerEvent.clientY
+        let hovering = false
+
+        const widget = document.querySelector('.floating-widget')
+        if (widget) {
+            const rect = widget.getBoundingClientRect()
+            if (
+                clientX >= rect.left &&
+                clientX <= rect.right &&
+                clientY >= rect.top &&
+                clientY <= rect.bottom
+            ) {
+                hovering = true
+            }
+        }
+
+        if (!hovering) {
+            const target = document.elementFromPoint(clientX, clientY)
+            hovering = !!target && (target === sideMenu || sideMenu.contains(target))
+        }
+
         syncHoveringState(hovering)
         pendingPointerEvent = null
     }
